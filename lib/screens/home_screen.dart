@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'inspection_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -28,7 +29,12 @@ class HomeScreen extends StatelessWidget {
               value: '3',
               icon: Icons.assignment,
               onTap: () {
-                // Navigate to inspection list
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const InspectionListScreen(),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 12),
