@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maintenance_logging_system/widgets/theme_toggle_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -61,6 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('RampCheck Login'),
+        actions: const [
+          ThemeToggleButton(), 
+        ],
       ),
       body: SafeArea(
         child: Center(
