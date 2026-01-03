@@ -1,0 +1,3667 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'app_database.dart';
+
+// ignore_for_file: type=lint
+class $InspectionsTable extends Inspections
+    with TableInfo<$InspectionsTable, Inspection> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InspectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _aircraftTailNumberMeta =
+      const VerificationMeta('aircraftTailNumber');
+  @override
+  late final GeneratedColumn<String> aircraftTailNumber =
+      GeneratedColumn<String>(
+        'aircraft_tail_number',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _openedByTechnicianUidMeta =
+      const VerificationMeta('openedByTechnicianUid');
+  @override
+  late final GeneratedColumn<String> openedByTechnicianUid =
+      GeneratedColumn<String>(
+        'opened_by_technician_uid',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _openedAtMeta = const VerificationMeta(
+    'openedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> openedAt = GeneratedColumn<DateTime>(
+    'opened_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _closedAtMeta = const VerificationMeta(
+    'closedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> closedAt = GeneratedColumn<DateTime>(
+    'closed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<InspectionStatus, String> status =
+      GeneratedColumn<String>(
+        'status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<InspectionStatus>($InspectionsTable.$converterstatus);
+  static const VerificationMeta _lastModifiedAtMeta = const VerificationMeta(
+    'lastModifiedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastModifiedAt =
+      GeneratedColumn<DateTime>(
+        'last_modified_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncedMeta = const VerificationMeta('synced');
+  @override
+  late final GeneratedColumn<bool> synced = GeneratedColumn<bool>(
+    'synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    aircraftTailNumber,
+    openedByTechnicianUid,
+    openedAt,
+    closedAt,
+    status,
+    lastModifiedAt,
+    version,
+    synced,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'inspections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Inspection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('aircraft_tail_number')) {
+      context.handle(
+        _aircraftTailNumberMeta,
+        aircraftTailNumber.isAcceptableOrUnknown(
+          data['aircraft_tail_number']!,
+          _aircraftTailNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_aircraftTailNumberMeta);
+    }
+    if (data.containsKey('opened_by_technician_uid')) {
+      context.handle(
+        _openedByTechnicianUidMeta,
+        openedByTechnicianUid.isAcceptableOrUnknown(
+          data['opened_by_technician_uid']!,
+          _openedByTechnicianUidMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_openedByTechnicianUidMeta);
+    }
+    if (data.containsKey('opened_at')) {
+      context.handle(
+        _openedAtMeta,
+        openedAt.isAcceptableOrUnknown(data['opened_at']!, _openedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_openedAtMeta);
+    }
+    if (data.containsKey('closed_at')) {
+      context.handle(
+        _closedAtMeta,
+        closedAt.isAcceptableOrUnknown(data['closed_at']!, _closedAtMeta),
+      );
+    }
+    if (data.containsKey('last_modified_at')) {
+      context.handle(
+        _lastModifiedAtMeta,
+        lastModifiedAt.isAcceptableOrUnknown(
+          data['last_modified_at']!,
+          _lastModifiedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedAtMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('synced')) {
+      context.handle(
+        _syncedMeta,
+        synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Inspection map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Inspection(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      aircraftTailNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}aircraft_tail_number'],
+      )!,
+      openedByTechnicianUid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}opened_by_technician_uid'],
+      )!,
+      openedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}opened_at'],
+      )!,
+      closedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}closed_at'],
+      ),
+      status: $InspectionsTable.$converterstatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}status'],
+        )!,
+      ),
+      lastModifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_modified_at'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      synced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}synced'],
+      )!,
+    );
+  }
+
+  @override
+  $InspectionsTable createAlias(String alias) {
+    return $InspectionsTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<InspectionStatus, String> $converterstatus =
+      const InspectionStatusConverter();
+}
+
+class Inspection extends DataClass implements Insertable<Inspection> {
+  final String id;
+  final String aircraftTailNumber;
+  final String openedByTechnicianUid;
+  final DateTime openedAt;
+  final DateTime? closedAt;
+  final InspectionStatus status;
+  final DateTime lastModifiedAt;
+  final int version;
+  final bool synced;
+  const Inspection({
+    required this.id,
+    required this.aircraftTailNumber,
+    required this.openedByTechnicianUid,
+    required this.openedAt,
+    this.closedAt,
+    required this.status,
+    required this.lastModifiedAt,
+    required this.version,
+    required this.synced,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['aircraft_tail_number'] = Variable<String>(aircraftTailNumber);
+    map['opened_by_technician_uid'] = Variable<String>(openedByTechnicianUid);
+    map['opened_at'] = Variable<DateTime>(openedAt);
+    if (!nullToAbsent || closedAt != null) {
+      map['closed_at'] = Variable<DateTime>(closedAt);
+    }
+    {
+      map['status'] = Variable<String>(
+        $InspectionsTable.$converterstatus.toSql(status),
+      );
+    }
+    map['last_modified_at'] = Variable<DateTime>(lastModifiedAt);
+    map['version'] = Variable<int>(version);
+    map['synced'] = Variable<bool>(synced);
+    return map;
+  }
+
+  InspectionsCompanion toCompanion(bool nullToAbsent) {
+    return InspectionsCompanion(
+      id: Value(id),
+      aircraftTailNumber: Value(aircraftTailNumber),
+      openedByTechnicianUid: Value(openedByTechnicianUid),
+      openedAt: Value(openedAt),
+      closedAt: closedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(closedAt),
+      status: Value(status),
+      lastModifiedAt: Value(lastModifiedAt),
+      version: Value(version),
+      synced: Value(synced),
+    );
+  }
+
+  factory Inspection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Inspection(
+      id: serializer.fromJson<String>(json['id']),
+      aircraftTailNumber: serializer.fromJson<String>(
+        json['aircraftTailNumber'],
+      ),
+      openedByTechnicianUid: serializer.fromJson<String>(
+        json['openedByTechnicianUid'],
+      ),
+      openedAt: serializer.fromJson<DateTime>(json['openedAt']),
+      closedAt: serializer.fromJson<DateTime?>(json['closedAt']),
+      status: serializer.fromJson<InspectionStatus>(json['status']),
+      lastModifiedAt: serializer.fromJson<DateTime>(json['lastModifiedAt']),
+      version: serializer.fromJson<int>(json['version']),
+      synced: serializer.fromJson<bool>(json['synced']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'aircraftTailNumber': serializer.toJson<String>(aircraftTailNumber),
+      'openedByTechnicianUid': serializer.toJson<String>(openedByTechnicianUid),
+      'openedAt': serializer.toJson<DateTime>(openedAt),
+      'closedAt': serializer.toJson<DateTime?>(closedAt),
+      'status': serializer.toJson<InspectionStatus>(status),
+      'lastModifiedAt': serializer.toJson<DateTime>(lastModifiedAt),
+      'version': serializer.toJson<int>(version),
+      'synced': serializer.toJson<bool>(synced),
+    };
+  }
+
+  Inspection copyWith({
+    String? id,
+    String? aircraftTailNumber,
+    String? openedByTechnicianUid,
+    DateTime? openedAt,
+    Value<DateTime?> closedAt = const Value.absent(),
+    InspectionStatus? status,
+    DateTime? lastModifiedAt,
+    int? version,
+    bool? synced,
+  }) => Inspection(
+    id: id ?? this.id,
+    aircraftTailNumber: aircraftTailNumber ?? this.aircraftTailNumber,
+    openedByTechnicianUid: openedByTechnicianUid ?? this.openedByTechnicianUid,
+    openedAt: openedAt ?? this.openedAt,
+    closedAt: closedAt.present ? closedAt.value : this.closedAt,
+    status: status ?? this.status,
+    lastModifiedAt: lastModifiedAt ?? this.lastModifiedAt,
+    version: version ?? this.version,
+    synced: synced ?? this.synced,
+  );
+  Inspection copyWithCompanion(InspectionsCompanion data) {
+    return Inspection(
+      id: data.id.present ? data.id.value : this.id,
+      aircraftTailNumber: data.aircraftTailNumber.present
+          ? data.aircraftTailNumber.value
+          : this.aircraftTailNumber,
+      openedByTechnicianUid: data.openedByTechnicianUid.present
+          ? data.openedByTechnicianUid.value
+          : this.openedByTechnicianUid,
+      openedAt: data.openedAt.present ? data.openedAt.value : this.openedAt,
+      closedAt: data.closedAt.present ? data.closedAt.value : this.closedAt,
+      status: data.status.present ? data.status.value : this.status,
+      lastModifiedAt: data.lastModifiedAt.present
+          ? data.lastModifiedAt.value
+          : this.lastModifiedAt,
+      version: data.version.present ? data.version.value : this.version,
+      synced: data.synced.present ? data.synced.value : this.synced,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Inspection(')
+          ..write('id: $id, ')
+          ..write('aircraftTailNumber: $aircraftTailNumber, ')
+          ..write('openedByTechnicianUid: $openedByTechnicianUid, ')
+          ..write('openedAt: $openedAt, ')
+          ..write('closedAt: $closedAt, ')
+          ..write('status: $status, ')
+          ..write('lastModifiedAt: $lastModifiedAt, ')
+          ..write('version: $version, ')
+          ..write('synced: $synced')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    aircraftTailNumber,
+    openedByTechnicianUid,
+    openedAt,
+    closedAt,
+    status,
+    lastModifiedAt,
+    version,
+    synced,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Inspection &&
+          other.id == this.id &&
+          other.aircraftTailNumber == this.aircraftTailNumber &&
+          other.openedByTechnicianUid == this.openedByTechnicianUid &&
+          other.openedAt == this.openedAt &&
+          other.closedAt == this.closedAt &&
+          other.status == this.status &&
+          other.lastModifiedAt == this.lastModifiedAt &&
+          other.version == this.version &&
+          other.synced == this.synced);
+}
+
+class InspectionsCompanion extends UpdateCompanion<Inspection> {
+  final Value<String> id;
+  final Value<String> aircraftTailNumber;
+  final Value<String> openedByTechnicianUid;
+  final Value<DateTime> openedAt;
+  final Value<DateTime?> closedAt;
+  final Value<InspectionStatus> status;
+  final Value<DateTime> lastModifiedAt;
+  final Value<int> version;
+  final Value<bool> synced;
+  final Value<int> rowid;
+  const InspectionsCompanion({
+    this.id = const Value.absent(),
+    this.aircraftTailNumber = const Value.absent(),
+    this.openedByTechnicianUid = const Value.absent(),
+    this.openedAt = const Value.absent(),
+    this.closedAt = const Value.absent(),
+    this.status = const Value.absent(),
+    this.lastModifiedAt = const Value.absent(),
+    this.version = const Value.absent(),
+    this.synced = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InspectionsCompanion.insert({
+    required String id,
+    required String aircraftTailNumber,
+    required String openedByTechnicianUid,
+    required DateTime openedAt,
+    this.closedAt = const Value.absent(),
+    required InspectionStatus status,
+    required DateTime lastModifiedAt,
+    this.version = const Value.absent(),
+    this.synced = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       aircraftTailNumber = Value(aircraftTailNumber),
+       openedByTechnicianUid = Value(openedByTechnicianUid),
+       openedAt = Value(openedAt),
+       status = Value(status),
+       lastModifiedAt = Value(lastModifiedAt);
+  static Insertable<Inspection> custom({
+    Expression<String>? id,
+    Expression<String>? aircraftTailNumber,
+    Expression<String>? openedByTechnicianUid,
+    Expression<DateTime>? openedAt,
+    Expression<DateTime>? closedAt,
+    Expression<String>? status,
+    Expression<DateTime>? lastModifiedAt,
+    Expression<int>? version,
+    Expression<bool>? synced,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (aircraftTailNumber != null)
+        'aircraft_tail_number': aircraftTailNumber,
+      if (openedByTechnicianUid != null)
+        'opened_by_technician_uid': openedByTechnicianUid,
+      if (openedAt != null) 'opened_at': openedAt,
+      if (closedAt != null) 'closed_at': closedAt,
+      if (status != null) 'status': status,
+      if (lastModifiedAt != null) 'last_modified_at': lastModifiedAt,
+      if (version != null) 'version': version,
+      if (synced != null) 'synced': synced,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InspectionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? aircraftTailNumber,
+    Value<String>? openedByTechnicianUid,
+    Value<DateTime>? openedAt,
+    Value<DateTime?>? closedAt,
+    Value<InspectionStatus>? status,
+    Value<DateTime>? lastModifiedAt,
+    Value<int>? version,
+    Value<bool>? synced,
+    Value<int>? rowid,
+  }) {
+    return InspectionsCompanion(
+      id: id ?? this.id,
+      aircraftTailNumber: aircraftTailNumber ?? this.aircraftTailNumber,
+      openedByTechnicianUid:
+          openedByTechnicianUid ?? this.openedByTechnicianUid,
+      openedAt: openedAt ?? this.openedAt,
+      closedAt: closedAt ?? this.closedAt,
+      status: status ?? this.status,
+      lastModifiedAt: lastModifiedAt ?? this.lastModifiedAt,
+      version: version ?? this.version,
+      synced: synced ?? this.synced,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (aircraftTailNumber.present) {
+      map['aircraft_tail_number'] = Variable<String>(aircraftTailNumber.value);
+    }
+    if (openedByTechnicianUid.present) {
+      map['opened_by_technician_uid'] = Variable<String>(
+        openedByTechnicianUid.value,
+      );
+    }
+    if (openedAt.present) {
+      map['opened_at'] = Variable<DateTime>(openedAt.value);
+    }
+    if (closedAt.present) {
+      map['closed_at'] = Variable<DateTime>(closedAt.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(
+        $InspectionsTable.$converterstatus.toSql(status.value),
+      );
+    }
+    if (lastModifiedAt.present) {
+      map['last_modified_at'] = Variable<DateTime>(lastModifiedAt.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (synced.present) {
+      map['synced'] = Variable<bool>(synced.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InspectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('aircraftTailNumber: $aircraftTailNumber, ')
+          ..write('openedByTechnicianUid: $openedByTechnicianUid, ')
+          ..write('openedAt: $openedAt, ')
+          ..write('closedAt: $closedAt, ')
+          ..write('status: $status, ')
+          ..write('lastModifiedAt: $lastModifiedAt, ')
+          ..write('version: $version, ')
+          ..write('synced: $synced, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TasksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _inspectionIdMeta = const VerificationMeta(
+    'inspectionId',
+  );
+  @override
+  late final GeneratedColumn<String> inspectionId = GeneratedColumn<String>(
+    'inspection_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<TaskResult?, String> result =
+      GeneratedColumn<String>(
+        'result',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<TaskResult?>($TasksTable.$converterresult);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _completedMeta = const VerificationMeta(
+    'completed',
+  );
+  @override
+  late final GeneratedColumn<bool> completed = GeneratedColumn<bool>(
+    'completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastModifiedAtMeta = const VerificationMeta(
+    'lastModifiedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastModifiedAt =
+      GeneratedColumn<DateTime>(
+        'last_modified_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _versionMeta = const VerificationMeta(
+    'version',
+  );
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+    'version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncedMeta = const VerificationMeta('synced');
+  @override
+  late final GeneratedColumn<bool> synced = GeneratedColumn<bool>(
+    'synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    inspectionId,
+    code,
+    title,
+    description,
+    result,
+    notes,
+    completed,
+    completedAt,
+    lastModifiedAt,
+    version,
+    synced,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tasks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Task> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('inspection_id')) {
+      context.handle(
+        _inspectionIdMeta,
+        inspectionId.isAcceptableOrUnknown(
+          data['inspection_id']!,
+          _inspectionIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_inspectionIdMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('completed')) {
+      context.handle(
+        _completedMeta,
+        completed.isAcceptableOrUnknown(data['completed']!, _completedMeta),
+      );
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
+          _completedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_modified_at')) {
+      context.handle(
+        _lastModifiedAtMeta,
+        lastModifiedAt.isAcceptableOrUnknown(
+          data['last_modified_at']!,
+          _lastModifiedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedAtMeta);
+    }
+    if (data.containsKey('version')) {
+      context.handle(
+        _versionMeta,
+        version.isAcceptableOrUnknown(data['version']!, _versionMeta),
+      );
+    }
+    if (data.containsKey('synced')) {
+      context.handle(
+        _syncedMeta,
+        synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Task map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Task(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      inspectionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}inspection_id'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      ),
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      result: $TasksTable.$converterresult.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}result'],
+        ),
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      completed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}completed'],
+      )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at'],
+      ),
+      lastModifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_modified_at'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version'],
+      )!,
+      synced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}synced'],
+      )!,
+    );
+  }
+
+  @override
+  $TasksTable createAlias(String alias) {
+    return $TasksTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<TaskResult?, String?> $converterresult =
+      const TaskResultConverter();
+}
+
+class Task extends DataClass implements Insertable<Task> {
+  final String id;
+  final String inspectionId;
+  final String? code;
+  final String title;
+  final String? description;
+  final TaskResult? result;
+  final String? notes;
+  final bool completed;
+  final DateTime? completedAt;
+  final DateTime lastModifiedAt;
+  final int version;
+  final bool synced;
+  const Task({
+    required this.id,
+    required this.inspectionId,
+    this.code,
+    required this.title,
+    this.description,
+    this.result,
+    this.notes,
+    required this.completed,
+    this.completedAt,
+    required this.lastModifiedAt,
+    required this.version,
+    required this.synced,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['inspection_id'] = Variable<String>(inspectionId);
+    if (!nullToAbsent || code != null) {
+      map['code'] = Variable<String>(code);
+    }
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || result != null) {
+      map['result'] = Variable<String>(
+        $TasksTable.$converterresult.toSql(result),
+      );
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['completed'] = Variable<bool>(completed);
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
+    }
+    map['last_modified_at'] = Variable<DateTime>(lastModifiedAt);
+    map['version'] = Variable<int>(version);
+    map['synced'] = Variable<bool>(synced);
+    return map;
+  }
+
+  TasksCompanion toCompanion(bool nullToAbsent) {
+    return TasksCompanion(
+      id: Value(id),
+      inspectionId: Value(inspectionId),
+      code: code == null && nullToAbsent ? const Value.absent() : Value(code),
+      title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      result: result == null && nullToAbsent
+          ? const Value.absent()
+          : Value(result),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      completed: Value(completed),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
+      lastModifiedAt: Value(lastModifiedAt),
+      version: Value(version),
+      synced: Value(synced),
+    );
+  }
+
+  factory Task.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Task(
+      id: serializer.fromJson<String>(json['id']),
+      inspectionId: serializer.fromJson<String>(json['inspectionId']),
+      code: serializer.fromJson<String?>(json['code']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      result: serializer.fromJson<TaskResult?>(json['result']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      completed: serializer.fromJson<bool>(json['completed']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
+      lastModifiedAt: serializer.fromJson<DateTime>(json['lastModifiedAt']),
+      version: serializer.fromJson<int>(json['version']),
+      synced: serializer.fromJson<bool>(json['synced']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'inspectionId': serializer.toJson<String>(inspectionId),
+      'code': serializer.toJson<String?>(code),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
+      'result': serializer.toJson<TaskResult?>(result),
+      'notes': serializer.toJson<String?>(notes),
+      'completed': serializer.toJson<bool>(completed),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
+      'lastModifiedAt': serializer.toJson<DateTime>(lastModifiedAt),
+      'version': serializer.toJson<int>(version),
+      'synced': serializer.toJson<bool>(synced),
+    };
+  }
+
+  Task copyWith({
+    String? id,
+    String? inspectionId,
+    Value<String?> code = const Value.absent(),
+    String? title,
+    Value<String?> description = const Value.absent(),
+    Value<TaskResult?> result = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    bool? completed,
+    Value<DateTime?> completedAt = const Value.absent(),
+    DateTime? lastModifiedAt,
+    int? version,
+    bool? synced,
+  }) => Task(
+    id: id ?? this.id,
+    inspectionId: inspectionId ?? this.inspectionId,
+    code: code.present ? code.value : this.code,
+    title: title ?? this.title,
+    description: description.present ? description.value : this.description,
+    result: result.present ? result.value : this.result,
+    notes: notes.present ? notes.value : this.notes,
+    completed: completed ?? this.completed,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
+    lastModifiedAt: lastModifiedAt ?? this.lastModifiedAt,
+    version: version ?? this.version,
+    synced: synced ?? this.synced,
+  );
+  Task copyWithCompanion(TasksCompanion data) {
+    return Task(
+      id: data.id.present ? data.id.value : this.id,
+      inspectionId: data.inspectionId.present
+          ? data.inspectionId.value
+          : this.inspectionId,
+      code: data.code.present ? data.code.value : this.code,
+      title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      result: data.result.present ? data.result.value : this.result,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      completed: data.completed.present ? data.completed.value : this.completed,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
+      lastModifiedAt: data.lastModifiedAt.present
+          ? data.lastModifiedAt.value
+          : this.lastModifiedAt,
+      version: data.version.present ? data.version.value : this.version,
+      synced: data.synced.present ? data.synced.value : this.synced,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Task(')
+          ..write('id: $id, ')
+          ..write('inspectionId: $inspectionId, ')
+          ..write('code: $code, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('result: $result, ')
+          ..write('notes: $notes, ')
+          ..write('completed: $completed, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('lastModifiedAt: $lastModifiedAt, ')
+          ..write('version: $version, ')
+          ..write('synced: $synced')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    inspectionId,
+    code,
+    title,
+    description,
+    result,
+    notes,
+    completed,
+    completedAt,
+    lastModifiedAt,
+    version,
+    synced,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Task &&
+          other.id == this.id &&
+          other.inspectionId == this.inspectionId &&
+          other.code == this.code &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.result == this.result &&
+          other.notes == this.notes &&
+          other.completed == this.completed &&
+          other.completedAt == this.completedAt &&
+          other.lastModifiedAt == this.lastModifiedAt &&
+          other.version == this.version &&
+          other.synced == this.synced);
+}
+
+class TasksCompanion extends UpdateCompanion<Task> {
+  final Value<String> id;
+  final Value<String> inspectionId;
+  final Value<String?> code;
+  final Value<String> title;
+  final Value<String?> description;
+  final Value<TaskResult?> result;
+  final Value<String?> notes;
+  final Value<bool> completed;
+  final Value<DateTime?> completedAt;
+  final Value<DateTime> lastModifiedAt;
+  final Value<int> version;
+  final Value<bool> synced;
+  final Value<int> rowid;
+  const TasksCompanion({
+    this.id = const Value.absent(),
+    this.inspectionId = const Value.absent(),
+    this.code = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.result = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.completed = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.lastModifiedAt = const Value.absent(),
+    this.version = const Value.absent(),
+    this.synced = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TasksCompanion.insert({
+    required String id,
+    required String inspectionId,
+    this.code = const Value.absent(),
+    required String title,
+    this.description = const Value.absent(),
+    this.result = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.completed = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    required DateTime lastModifiedAt,
+    this.version = const Value.absent(),
+    this.synced = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       inspectionId = Value(inspectionId),
+       title = Value(title),
+       lastModifiedAt = Value(lastModifiedAt);
+  static Insertable<Task> custom({
+    Expression<String>? id,
+    Expression<String>? inspectionId,
+    Expression<String>? code,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<String>? result,
+    Expression<String>? notes,
+    Expression<bool>? completed,
+    Expression<DateTime>? completedAt,
+    Expression<DateTime>? lastModifiedAt,
+    Expression<int>? version,
+    Expression<bool>? synced,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (inspectionId != null) 'inspection_id': inspectionId,
+      if (code != null) 'code': code,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (result != null) 'result': result,
+      if (notes != null) 'notes': notes,
+      if (completed != null) 'completed': completed,
+      if (completedAt != null) 'completed_at': completedAt,
+      if (lastModifiedAt != null) 'last_modified_at': lastModifiedAt,
+      if (version != null) 'version': version,
+      if (synced != null) 'synced': synced,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TasksCompanion copyWith({
+    Value<String>? id,
+    Value<String>? inspectionId,
+    Value<String?>? code,
+    Value<String>? title,
+    Value<String?>? description,
+    Value<TaskResult?>? result,
+    Value<String?>? notes,
+    Value<bool>? completed,
+    Value<DateTime?>? completedAt,
+    Value<DateTime>? lastModifiedAt,
+    Value<int>? version,
+    Value<bool>? synced,
+    Value<int>? rowid,
+  }) {
+    return TasksCompanion(
+      id: id ?? this.id,
+      inspectionId: inspectionId ?? this.inspectionId,
+      code: code ?? this.code,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      result: result ?? this.result,
+      notes: notes ?? this.notes,
+      completed: completed ?? this.completed,
+      completedAt: completedAt ?? this.completedAt,
+      lastModifiedAt: lastModifiedAt ?? this.lastModifiedAt,
+      version: version ?? this.version,
+      synced: synced ?? this.synced,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (inspectionId.present) {
+      map['inspection_id'] = Variable<String>(inspectionId.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (result.present) {
+      map['result'] = Variable<String>(
+        $TasksTable.$converterresult.toSql(result.value),
+      );
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (completed.present) {
+      map['completed'] = Variable<bool>(completed.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
+    if (lastModifiedAt.present) {
+      map['last_modified_at'] = Variable<DateTime>(lastModifiedAt.value);
+    }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
+    if (synced.present) {
+      map['synced'] = Variable<bool>(synced.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TasksCompanion(')
+          ..write('id: $id, ')
+          ..write('inspectionId: $inspectionId, ')
+          ..write('code: $code, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('result: $result, ')
+          ..write('notes: $notes, ')
+          ..write('completed: $completed, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('lastModifiedAt: $lastModifiedAt, ')
+          ..write('version: $version, ')
+          ..write('synced: $synced, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AuditEventsTable extends AuditEvents
+    with TableInfo<$AuditEventsTable, AuditEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AuditEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
+    'entityType',
+  );
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityIdMeta = const VerificationMeta(
+    'entityId',
+  );
+  @override
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+    'entity_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+    'action',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _technicianUidMeta = const VerificationMeta(
+    'technicianUid',
+  );
+  @override
+  late final GeneratedColumn<String> technicianUid = GeneratedColumn<String>(
+    'technician_uid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
+    'occurredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> occurredAt = GeneratedColumn<DateTime>(
+    'occurred_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _metadataJsonMeta = const VerificationMeta(
+    'metadataJson',
+  );
+  @override
+  late final GeneratedColumn<String> metadataJson = GeneratedColumn<String>(
+    'metadata_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncedMeta = const VerificationMeta('synced');
+  @override
+  late final GeneratedColumn<bool> synced = GeneratedColumn<bool>(
+    'synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    entityType,
+    entityId,
+    action,
+    technicianUid,
+    occurredAt,
+    metadataJson,
+    synced,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'audit_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AuditEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+        _entityTypeMeta,
+        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(
+        _entityIdMeta,
+        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('action')) {
+      context.handle(
+        _actionMeta,
+        action.isAcceptableOrUnknown(data['action']!, _actionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('technician_uid')) {
+      context.handle(
+        _technicianUidMeta,
+        technicianUid.isAcceptableOrUnknown(
+          data['technician_uid']!,
+          _technicianUidMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_technicianUidMeta);
+    }
+    if (data.containsKey('occurred_at')) {
+      context.handle(
+        _occurredAtMeta,
+        occurredAt.isAcceptableOrUnknown(data['occurred_at']!, _occurredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_occurredAtMeta);
+    }
+    if (data.containsKey('metadata_json')) {
+      context.handle(
+        _metadataJsonMeta,
+        metadataJson.isAcceptableOrUnknown(
+          data['metadata_json']!,
+          _metadataJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('synced')) {
+      context.handle(
+        _syncedMeta,
+        synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AuditEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AuditEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      )!,
+      entityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_id'],
+      )!,
+      action: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}action'],
+      )!,
+      technicianUid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}technician_uid'],
+      )!,
+      occurredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}occurred_at'],
+      )!,
+      metadataJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata_json'],
+      ),
+      synced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}synced'],
+      )!,
+    );
+  }
+
+  @override
+  $AuditEventsTable createAlias(String alias) {
+    return $AuditEventsTable(attachedDatabase, alias);
+  }
+}
+
+class AuditEvent extends DataClass implements Insertable<AuditEvent> {
+  final String id;
+  final String entityType;
+  final String entityId;
+  final String action;
+  final String technicianUid;
+  final DateTime occurredAt;
+  final String? metadataJson;
+  final bool synced;
+  const AuditEvent({
+    required this.id,
+    required this.entityType,
+    required this.entityId,
+    required this.action,
+    required this.technicianUid,
+    required this.occurredAt,
+    this.metadataJson,
+    required this.synced,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['entity_type'] = Variable<String>(entityType);
+    map['entity_id'] = Variable<String>(entityId);
+    map['action'] = Variable<String>(action);
+    map['technician_uid'] = Variable<String>(technicianUid);
+    map['occurred_at'] = Variable<DateTime>(occurredAt);
+    if (!nullToAbsent || metadataJson != null) {
+      map['metadata_json'] = Variable<String>(metadataJson);
+    }
+    map['synced'] = Variable<bool>(synced);
+    return map;
+  }
+
+  AuditEventsCompanion toCompanion(bool nullToAbsent) {
+    return AuditEventsCompanion(
+      id: Value(id),
+      entityType: Value(entityType),
+      entityId: Value(entityId),
+      action: Value(action),
+      technicianUid: Value(technicianUid),
+      occurredAt: Value(occurredAt),
+      metadataJson: metadataJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(metadataJson),
+      synced: Value(synced),
+    );
+  }
+
+  factory AuditEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AuditEvent(
+      id: serializer.fromJson<String>(json['id']),
+      entityType: serializer.fromJson<String>(json['entityType']),
+      entityId: serializer.fromJson<String>(json['entityId']),
+      action: serializer.fromJson<String>(json['action']),
+      technicianUid: serializer.fromJson<String>(json['technicianUid']),
+      occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
+      metadataJson: serializer.fromJson<String?>(json['metadataJson']),
+      synced: serializer.fromJson<bool>(json['synced']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'entityType': serializer.toJson<String>(entityType),
+      'entityId': serializer.toJson<String>(entityId),
+      'action': serializer.toJson<String>(action),
+      'technicianUid': serializer.toJson<String>(technicianUid),
+      'occurredAt': serializer.toJson<DateTime>(occurredAt),
+      'metadataJson': serializer.toJson<String?>(metadataJson),
+      'synced': serializer.toJson<bool>(synced),
+    };
+  }
+
+  AuditEvent copyWith({
+    String? id,
+    String? entityType,
+    String? entityId,
+    String? action,
+    String? technicianUid,
+    DateTime? occurredAt,
+    Value<String?> metadataJson = const Value.absent(),
+    bool? synced,
+  }) => AuditEvent(
+    id: id ?? this.id,
+    entityType: entityType ?? this.entityType,
+    entityId: entityId ?? this.entityId,
+    action: action ?? this.action,
+    technicianUid: technicianUid ?? this.technicianUid,
+    occurredAt: occurredAt ?? this.occurredAt,
+    metadataJson: metadataJson.present ? metadataJson.value : this.metadataJson,
+    synced: synced ?? this.synced,
+  );
+  AuditEvent copyWithCompanion(AuditEventsCompanion data) {
+    return AuditEvent(
+      id: data.id.present ? data.id.value : this.id,
+      entityType: data.entityType.present
+          ? data.entityType.value
+          : this.entityType,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      action: data.action.present ? data.action.value : this.action,
+      technicianUid: data.technicianUid.present
+          ? data.technicianUid.value
+          : this.technicianUid,
+      occurredAt: data.occurredAt.present
+          ? data.occurredAt.value
+          : this.occurredAt,
+      metadataJson: data.metadataJson.present
+          ? data.metadataJson.value
+          : this.metadataJson,
+      synced: data.synced.present ? data.synced.value : this.synced,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditEvent(')
+          ..write('id: $id, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityId: $entityId, ')
+          ..write('action: $action, ')
+          ..write('technicianUid: $technicianUid, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('metadataJson: $metadataJson, ')
+          ..write('synced: $synced')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    entityType,
+    entityId,
+    action,
+    technicianUid,
+    occurredAt,
+    metadataJson,
+    synced,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AuditEvent &&
+          other.id == this.id &&
+          other.entityType == this.entityType &&
+          other.entityId == this.entityId &&
+          other.action == this.action &&
+          other.technicianUid == this.technicianUid &&
+          other.occurredAt == this.occurredAt &&
+          other.metadataJson == this.metadataJson &&
+          other.synced == this.synced);
+}
+
+class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
+  final Value<String> id;
+  final Value<String> entityType;
+  final Value<String> entityId;
+  final Value<String> action;
+  final Value<String> technicianUid;
+  final Value<DateTime> occurredAt;
+  final Value<String?> metadataJson;
+  final Value<bool> synced;
+  final Value<int> rowid;
+  const AuditEventsCompanion({
+    this.id = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.action = const Value.absent(),
+    this.technicianUid = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.metadataJson = const Value.absent(),
+    this.synced = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AuditEventsCompanion.insert({
+    required String id,
+    required String entityType,
+    required String entityId,
+    required String action,
+    required String technicianUid,
+    required DateTime occurredAt,
+    this.metadataJson = const Value.absent(),
+    this.synced = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       entityType = Value(entityType),
+       entityId = Value(entityId),
+       action = Value(action),
+       technicianUid = Value(technicianUid),
+       occurredAt = Value(occurredAt);
+  static Insertable<AuditEvent> custom({
+    Expression<String>? id,
+    Expression<String>? entityType,
+    Expression<String>? entityId,
+    Expression<String>? action,
+    Expression<String>? technicianUid,
+    Expression<DateTime>? occurredAt,
+    Expression<String>? metadataJson,
+    Expression<bool>? synced,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (entityType != null) 'entity_type': entityType,
+      if (entityId != null) 'entity_id': entityId,
+      if (action != null) 'action': action,
+      if (technicianUid != null) 'technician_uid': technicianUid,
+      if (occurredAt != null) 'occurred_at': occurredAt,
+      if (metadataJson != null) 'metadata_json': metadataJson,
+      if (synced != null) 'synced': synced,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AuditEventsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? entityType,
+    Value<String>? entityId,
+    Value<String>? action,
+    Value<String>? technicianUid,
+    Value<DateTime>? occurredAt,
+    Value<String?>? metadataJson,
+    Value<bool>? synced,
+    Value<int>? rowid,
+  }) {
+    return AuditEventsCompanion(
+      id: id ?? this.id,
+      entityType: entityType ?? this.entityType,
+      entityId: entityId ?? this.entityId,
+      action: action ?? this.action,
+      technicianUid: technicianUid ?? this.technicianUid,
+      occurredAt: occurredAt ?? this.occurredAt,
+      metadataJson: metadataJson ?? this.metadataJson,
+      synced: synced ?? this.synced,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<String>(entityId.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (technicianUid.present) {
+      map['technician_uid'] = Variable<String>(technicianUid.value);
+    }
+    if (occurredAt.present) {
+      map['occurred_at'] = Variable<DateTime>(occurredAt.value);
+    }
+    if (metadataJson.present) {
+      map['metadata_json'] = Variable<String>(metadataJson.value);
+    }
+    if (synced.present) {
+      map['synced'] = Variable<bool>(synced.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuditEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityId: $entityId, ')
+          ..write('action: $action, ')
+          ..write('technicianUid: $technicianUid, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('metadataJson: $metadataJson, ')
+          ..write('synced: $synced, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $OutboxItemsTable extends OutboxItems
+    with TableInfo<$OutboxItemsTable, OutboxItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OutboxItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
+    'entityType',
+  );
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityLocalIdMeta = const VerificationMeta(
+    'entityLocalId',
+  );
+  @override
+  late final GeneratedColumn<String> entityLocalId = GeneratedColumn<String>(
+    'entity_local_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<OutboxStatus, String> status =
+      GeneratedColumn<String>(
+        'status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('pending'),
+      ).withConverter<OutboxStatus>($OutboxItemsTable.$converterstatus);
+  static const VerificationMeta _retryCountMeta = const VerificationMeta(
+    'retryCount',
+  );
+  @override
+  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
+    'retry_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastAttemptAtMeta = const VerificationMeta(
+    'lastAttemptAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastAttemptAt =
+      GeneratedColumn<DateTime>(
+        'last_attempt_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    type,
+    entityType,
+    entityLocalId,
+    payloadJson,
+    createdAt,
+    status,
+    retryCount,
+    lastAttemptAt,
+    lastError,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'outbox_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<OutboxItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+        _entityTypeMeta,
+        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
+    }
+    if (data.containsKey('entity_local_id')) {
+      context.handle(
+        _entityLocalIdMeta,
+        entityLocalId.isAcceptableOrUnknown(
+          data['entity_local_id']!,
+          _entityLocalIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_entityLocalIdMeta);
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('retry_count')) {
+      context.handle(
+        _retryCountMeta,
+        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
+      );
+    }
+    if (data.containsKey('last_attempt_at')) {
+      context.handle(
+        _lastAttemptAtMeta,
+        lastAttemptAt.isAcceptableOrUnknown(
+          data['last_attempt_at']!,
+          _lastAttemptAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  OutboxItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OutboxItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      )!,
+      entityLocalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_local_id'],
+      )!,
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      status: $OutboxItemsTable.$converterstatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}status'],
+        )!,
+      ),
+      retryCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry_count'],
+      )!,
+      lastAttemptAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_attempt_at'],
+      ),
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+    );
+  }
+
+  @override
+  $OutboxItemsTable createAlias(String alias) {
+    return $OutboxItemsTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<OutboxStatus, String> $converterstatus =
+      const OutboxStatusConverter();
+}
+
+class OutboxItem extends DataClass implements Insertable<OutboxItem> {
+  final int id;
+  final String type;
+  final String entityType;
+  final String entityLocalId;
+  final String payloadJson;
+  final DateTime createdAt;
+  final OutboxStatus status;
+  final int retryCount;
+  final DateTime? lastAttemptAt;
+  final String? lastError;
+  const OutboxItem({
+    required this.id,
+    required this.type,
+    required this.entityType,
+    required this.entityLocalId,
+    required this.payloadJson,
+    required this.createdAt,
+    required this.status,
+    required this.retryCount,
+    this.lastAttemptAt,
+    this.lastError,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['type'] = Variable<String>(type);
+    map['entity_type'] = Variable<String>(entityType);
+    map['entity_local_id'] = Variable<String>(entityLocalId);
+    map['payload_json'] = Variable<String>(payloadJson);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    {
+      map['status'] = Variable<String>(
+        $OutboxItemsTable.$converterstatus.toSql(status),
+      );
+    }
+    map['retry_count'] = Variable<int>(retryCount);
+    if (!nullToAbsent || lastAttemptAt != null) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt);
+    }
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    return map;
+  }
+
+  OutboxItemsCompanion toCompanion(bool nullToAbsent) {
+    return OutboxItemsCompanion(
+      id: Value(id),
+      type: Value(type),
+      entityType: Value(entityType),
+      entityLocalId: Value(entityLocalId),
+      payloadJson: Value(payloadJson),
+      createdAt: Value(createdAt),
+      status: Value(status),
+      retryCount: Value(retryCount),
+      lastAttemptAt: lastAttemptAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastAttemptAt),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+    );
+  }
+
+  factory OutboxItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OutboxItem(
+      id: serializer.fromJson<int>(json['id']),
+      type: serializer.fromJson<String>(json['type']),
+      entityType: serializer.fromJson<String>(json['entityType']),
+      entityLocalId: serializer.fromJson<String>(json['entityLocalId']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      status: serializer.fromJson<OutboxStatus>(json['status']),
+      retryCount: serializer.fromJson<int>(json['retryCount']),
+      lastAttemptAt: serializer.fromJson<DateTime?>(json['lastAttemptAt']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'type': serializer.toJson<String>(type),
+      'entityType': serializer.toJson<String>(entityType),
+      'entityLocalId': serializer.toJson<String>(entityLocalId),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'status': serializer.toJson<OutboxStatus>(status),
+      'retryCount': serializer.toJson<int>(retryCount),
+      'lastAttemptAt': serializer.toJson<DateTime?>(lastAttemptAt),
+      'lastError': serializer.toJson<String?>(lastError),
+    };
+  }
+
+  OutboxItem copyWith({
+    int? id,
+    String? type,
+    String? entityType,
+    String? entityLocalId,
+    String? payloadJson,
+    DateTime? createdAt,
+    OutboxStatus? status,
+    int? retryCount,
+    Value<DateTime?> lastAttemptAt = const Value.absent(),
+    Value<String?> lastError = const Value.absent(),
+  }) => OutboxItem(
+    id: id ?? this.id,
+    type: type ?? this.type,
+    entityType: entityType ?? this.entityType,
+    entityLocalId: entityLocalId ?? this.entityLocalId,
+    payloadJson: payloadJson ?? this.payloadJson,
+    createdAt: createdAt ?? this.createdAt,
+    status: status ?? this.status,
+    retryCount: retryCount ?? this.retryCount,
+    lastAttemptAt: lastAttemptAt.present
+        ? lastAttemptAt.value
+        : this.lastAttemptAt,
+    lastError: lastError.present ? lastError.value : this.lastError,
+  );
+  OutboxItem copyWithCompanion(OutboxItemsCompanion data) {
+    return OutboxItem(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      entityType: data.entityType.present
+          ? data.entityType.value
+          : this.entityType,
+      entityLocalId: data.entityLocalId.present
+          ? data.entityLocalId.value
+          : this.entityLocalId,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      status: data.status.present ? data.status.value : this.status,
+      retryCount: data.retryCount.present
+          ? data.retryCount.value
+          : this.retryCount,
+      lastAttemptAt: data.lastAttemptAt.present
+          ? data.lastAttemptAt.value
+          : this.lastAttemptAt,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OutboxItem(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityLocalId: $entityLocalId, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('status: $status, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('lastError: $lastError')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    type,
+    entityType,
+    entityLocalId,
+    payloadJson,
+    createdAt,
+    status,
+    retryCount,
+    lastAttemptAt,
+    lastError,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OutboxItem &&
+          other.id == this.id &&
+          other.type == this.type &&
+          other.entityType == this.entityType &&
+          other.entityLocalId == this.entityLocalId &&
+          other.payloadJson == this.payloadJson &&
+          other.createdAt == this.createdAt &&
+          other.status == this.status &&
+          other.retryCount == this.retryCount &&
+          other.lastAttemptAt == this.lastAttemptAt &&
+          other.lastError == this.lastError);
+}
+
+class OutboxItemsCompanion extends UpdateCompanion<OutboxItem> {
+  final Value<int> id;
+  final Value<String> type;
+  final Value<String> entityType;
+  final Value<String> entityLocalId;
+  final Value<String> payloadJson;
+  final Value<DateTime> createdAt;
+  final Value<OutboxStatus> status;
+  final Value<int> retryCount;
+  final Value<DateTime?> lastAttemptAt;
+  final Value<String?> lastError;
+  const OutboxItemsCompanion({
+    this.id = const Value.absent(),
+    this.type = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.entityLocalId = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.status = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    this.lastError = const Value.absent(),
+  });
+  OutboxItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required String type,
+    required String entityType,
+    required String entityLocalId,
+    required String payloadJson,
+    required DateTime createdAt,
+    this.status = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    this.lastError = const Value.absent(),
+  }) : type = Value(type),
+       entityType = Value(entityType),
+       entityLocalId = Value(entityLocalId),
+       payloadJson = Value(payloadJson),
+       createdAt = Value(createdAt);
+  static Insertable<OutboxItem> custom({
+    Expression<int>? id,
+    Expression<String>? type,
+    Expression<String>? entityType,
+    Expression<String>? entityLocalId,
+    Expression<String>? payloadJson,
+    Expression<DateTime>? createdAt,
+    Expression<String>? status,
+    Expression<int>? retryCount,
+    Expression<DateTime>? lastAttemptAt,
+    Expression<String>? lastError,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (type != null) 'type': type,
+      if (entityType != null) 'entity_type': entityType,
+      if (entityLocalId != null) 'entity_local_id': entityLocalId,
+      if (payloadJson != null) 'payload_json': payloadJson,
+      if (createdAt != null) 'created_at': createdAt,
+      if (status != null) 'status': status,
+      if (retryCount != null) 'retry_count': retryCount,
+      if (lastAttemptAt != null) 'last_attempt_at': lastAttemptAt,
+      if (lastError != null) 'last_error': lastError,
+    });
+  }
+
+  OutboxItemsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? type,
+    Value<String>? entityType,
+    Value<String>? entityLocalId,
+    Value<String>? payloadJson,
+    Value<DateTime>? createdAt,
+    Value<OutboxStatus>? status,
+    Value<int>? retryCount,
+    Value<DateTime?>? lastAttemptAt,
+    Value<String?>? lastError,
+  }) {
+    return OutboxItemsCompanion(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      entityType: entityType ?? this.entityType,
+      entityLocalId: entityLocalId ?? this.entityLocalId,
+      payloadJson: payloadJson ?? this.payloadJson,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+      retryCount: retryCount ?? this.retryCount,
+      lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
+      lastError: lastError ?? this.lastError,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
+    }
+    if (entityLocalId.present) {
+      map['entity_local_id'] = Variable<String>(entityLocalId.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(
+        $OutboxItemsTable.$converterstatus.toSql(status.value),
+      );
+    }
+    if (retryCount.present) {
+      map['retry_count'] = Variable<int>(retryCount.value);
+    }
+    if (lastAttemptAt.present) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OutboxItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityLocalId: $entityLocalId, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('status: $status, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('lastError: $lastError')
+          ..write(')'))
+        .toString();
+  }
+}
+
+abstract class _$AppDatabase extends GeneratedDatabase {
+  _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $InspectionsTable inspections = $InspectionsTable(this);
+  late final $TasksTable tasks = $TasksTable(this);
+  late final $AuditEventsTable auditEvents = $AuditEventsTable(this);
+  late final $OutboxItemsTable outboxItems = $OutboxItemsTable(this);
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    inspections,
+    tasks,
+    auditEvents,
+    outboxItems,
+  ];
+}
+
+typedef $$InspectionsTableCreateCompanionBuilder =
+    InspectionsCompanion Function({
+      required String id,
+      required String aircraftTailNumber,
+      required String openedByTechnicianUid,
+      required DateTime openedAt,
+      Value<DateTime?> closedAt,
+      required InspectionStatus status,
+      required DateTime lastModifiedAt,
+      Value<int> version,
+      Value<bool> synced,
+      Value<int> rowid,
+    });
+typedef $$InspectionsTableUpdateCompanionBuilder =
+    InspectionsCompanion Function({
+      Value<String> id,
+      Value<String> aircraftTailNumber,
+      Value<String> openedByTechnicianUid,
+      Value<DateTime> openedAt,
+      Value<DateTime?> closedAt,
+      Value<InspectionStatus> status,
+      Value<DateTime> lastModifiedAt,
+      Value<int> version,
+      Value<bool> synced,
+      Value<int> rowid,
+    });
+
+class $$InspectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $InspectionsTable> {
+  $$InspectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get aircraftTailNumber => $composableBuilder(
+    column: $table.aircraftTailNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get openedByTechnicianUid => $composableBuilder(
+    column: $table.openedByTechnicianUid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get openedAt => $composableBuilder(
+    column: $table.openedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get closedAt => $composableBuilder(
+    column: $table.closedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<InspectionStatus, InspectionStatus, String>
+  get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastModifiedAt => $composableBuilder(
+    column: $table.lastModifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InspectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $InspectionsTable> {
+  $$InspectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get aircraftTailNumber => $composableBuilder(
+    column: $table.aircraftTailNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get openedByTechnicianUid => $composableBuilder(
+    column: $table.openedByTechnicianUid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get openedAt => $composableBuilder(
+    column: $table.openedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get closedAt => $composableBuilder(
+    column: $table.closedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastModifiedAt => $composableBuilder(
+    column: $table.lastModifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InspectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InspectionsTable> {
+  $$InspectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get aircraftTailNumber => $composableBuilder(
+    column: $table.aircraftTailNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get openedByTechnicianUid => $composableBuilder(
+    column: $table.openedByTechnicianUid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get openedAt =>
+      $composableBuilder(column: $table.openedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get closedAt =>
+      $composableBuilder(column: $table.closedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<InspectionStatus, String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastModifiedAt => $composableBuilder(
+    column: $table.lastModifiedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<bool> get synced =>
+      $composableBuilder(column: $table.synced, builder: (column) => column);
+}
+
+class $$InspectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $InspectionsTable,
+          Inspection,
+          $$InspectionsTableFilterComposer,
+          $$InspectionsTableOrderingComposer,
+          $$InspectionsTableAnnotationComposer,
+          $$InspectionsTableCreateCompanionBuilder,
+          $$InspectionsTableUpdateCompanionBuilder,
+          (
+            Inspection,
+            BaseReferences<_$AppDatabase, $InspectionsTable, Inspection>,
+          ),
+          Inspection,
+          PrefetchHooks Function()
+        > {
+  $$InspectionsTableTableManager(_$AppDatabase db, $InspectionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InspectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InspectionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InspectionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> aircraftTailNumber = const Value.absent(),
+                Value<String> openedByTechnicianUid = const Value.absent(),
+                Value<DateTime> openedAt = const Value.absent(),
+                Value<DateTime?> closedAt = const Value.absent(),
+                Value<InspectionStatus> status = const Value.absent(),
+                Value<DateTime> lastModifiedAt = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InspectionsCompanion(
+                id: id,
+                aircraftTailNumber: aircraftTailNumber,
+                openedByTechnicianUid: openedByTechnicianUid,
+                openedAt: openedAt,
+                closedAt: closedAt,
+                status: status,
+                lastModifiedAt: lastModifiedAt,
+                version: version,
+                synced: synced,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String aircraftTailNumber,
+                required String openedByTechnicianUid,
+                required DateTime openedAt,
+                Value<DateTime?> closedAt = const Value.absent(),
+                required InspectionStatus status,
+                required DateTime lastModifiedAt,
+                Value<int> version = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InspectionsCompanion.insert(
+                id: id,
+                aircraftTailNumber: aircraftTailNumber,
+                openedByTechnicianUid: openedByTechnicianUid,
+                openedAt: openedAt,
+                closedAt: closedAt,
+                status: status,
+                lastModifiedAt: lastModifiedAt,
+                version: version,
+                synced: synced,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InspectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $InspectionsTable,
+      Inspection,
+      $$InspectionsTableFilterComposer,
+      $$InspectionsTableOrderingComposer,
+      $$InspectionsTableAnnotationComposer,
+      $$InspectionsTableCreateCompanionBuilder,
+      $$InspectionsTableUpdateCompanionBuilder,
+      (
+        Inspection,
+        BaseReferences<_$AppDatabase, $InspectionsTable, Inspection>,
+      ),
+      Inspection,
+      PrefetchHooks Function()
+    >;
+typedef $$TasksTableCreateCompanionBuilder =
+    TasksCompanion Function({
+      required String id,
+      required String inspectionId,
+      Value<String?> code,
+      required String title,
+      Value<String?> description,
+      Value<TaskResult?> result,
+      Value<String?> notes,
+      Value<bool> completed,
+      Value<DateTime?> completedAt,
+      required DateTime lastModifiedAt,
+      Value<int> version,
+      Value<bool> synced,
+      Value<int> rowid,
+    });
+typedef $$TasksTableUpdateCompanionBuilder =
+    TasksCompanion Function({
+      Value<String> id,
+      Value<String> inspectionId,
+      Value<String?> code,
+      Value<String> title,
+      Value<String?> description,
+      Value<TaskResult?> result,
+      Value<String?> notes,
+      Value<bool> completed,
+      Value<DateTime?> completedAt,
+      Value<DateTime> lastModifiedAt,
+      Value<int> version,
+      Value<bool> synced,
+      Value<int> rowid,
+    });
+
+class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get inspectionId => $composableBuilder(
+    column: $table.inspectionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<TaskResult?, TaskResult, String> get result =>
+      $composableBuilder(
+        column: $table.result,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get completed => $composableBuilder(
+    column: $table.completed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastModifiedAt => $composableBuilder(
+    column: $table.lastModifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TasksTableOrderingComposer
+    extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get inspectionId => $composableBuilder(
+    column: $table.inspectionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get result => $composableBuilder(
+    column: $table.result,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get completed => $composableBuilder(
+    column: $table.completed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastModifiedAt => $composableBuilder(
+    column: $table.lastModifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get version => $composableBuilder(
+    column: $table.version,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TasksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TasksTable> {
+  $$TasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get inspectionId => $composableBuilder(
+    column: $table.inspectionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<TaskResult?, String> get result =>
+      $composableBuilder(column: $table.result, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get completed =>
+      $composableBuilder(column: $table.completed, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastModifiedAt => $composableBuilder(
+    column: $table.lastModifiedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
+
+  GeneratedColumn<bool> get synced =>
+      $composableBuilder(column: $table.synced, builder: (column) => column);
+}
+
+class $$TasksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TasksTable,
+          Task,
+          $$TasksTableFilterComposer,
+          $$TasksTableOrderingComposer,
+          $$TasksTableAnnotationComposer,
+          $$TasksTableCreateCompanionBuilder,
+          $$TasksTableUpdateCompanionBuilder,
+          (Task, BaseReferences<_$AppDatabase, $TasksTable, Task>),
+          Task,
+          PrefetchHooks Function()
+        > {
+  $$TasksTableTableManager(_$AppDatabase db, $TasksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> inspectionId = const Value.absent(),
+                Value<String?> code = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<TaskResult?> result = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> completed = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+                Value<DateTime> lastModifiedAt = const Value.absent(),
+                Value<int> version = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TasksCompanion(
+                id: id,
+                inspectionId: inspectionId,
+                code: code,
+                title: title,
+                description: description,
+                result: result,
+                notes: notes,
+                completed: completed,
+                completedAt: completedAt,
+                lastModifiedAt: lastModifiedAt,
+                version: version,
+                synced: synced,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String inspectionId,
+                Value<String?> code = const Value.absent(),
+                required String title,
+                Value<String?> description = const Value.absent(),
+                Value<TaskResult?> result = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> completed = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
+                required DateTime lastModifiedAt,
+                Value<int> version = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TasksCompanion.insert(
+                id: id,
+                inspectionId: inspectionId,
+                code: code,
+                title: title,
+                description: description,
+                result: result,
+                notes: notes,
+                completed: completed,
+                completedAt: completedAt,
+                lastModifiedAt: lastModifiedAt,
+                version: version,
+                synced: synced,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TasksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TasksTable,
+      Task,
+      $$TasksTableFilterComposer,
+      $$TasksTableOrderingComposer,
+      $$TasksTableAnnotationComposer,
+      $$TasksTableCreateCompanionBuilder,
+      $$TasksTableUpdateCompanionBuilder,
+      (Task, BaseReferences<_$AppDatabase, $TasksTable, Task>),
+      Task,
+      PrefetchHooks Function()
+    >;
+typedef $$AuditEventsTableCreateCompanionBuilder =
+    AuditEventsCompanion Function({
+      required String id,
+      required String entityType,
+      required String entityId,
+      required String action,
+      required String technicianUid,
+      required DateTime occurredAt,
+      Value<String?> metadataJson,
+      Value<bool> synced,
+      Value<int> rowid,
+    });
+typedef $$AuditEventsTableUpdateCompanionBuilder =
+    AuditEventsCompanion Function({
+      Value<String> id,
+      Value<String> entityType,
+      Value<String> entityId,
+      Value<String> action,
+      Value<String> technicianUid,
+      Value<DateTime> occurredAt,
+      Value<String?> metadataJson,
+      Value<bool> synced,
+      Value<int> rowid,
+    });
+
+class $$AuditEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get technicianUid => $composableBuilder(
+    column: $table.technicianUid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AuditEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get technicianUid => $composableBuilder(
+    column: $table.technicianUid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AuditEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<String> get technicianUid => $composableBuilder(
+    column: $table.technicianUid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get synced =>
+      $composableBuilder(column: $table.synced, builder: (column) => column);
+}
+
+class $$AuditEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AuditEventsTable,
+          AuditEvent,
+          $$AuditEventsTableFilterComposer,
+          $$AuditEventsTableOrderingComposer,
+          $$AuditEventsTableAnnotationComposer,
+          $$AuditEventsTableCreateCompanionBuilder,
+          $$AuditEventsTableUpdateCompanionBuilder,
+          (
+            AuditEvent,
+            BaseReferences<_$AppDatabase, $AuditEventsTable, AuditEvent>,
+          ),
+          AuditEvent,
+          PrefetchHooks Function()
+        > {
+  $$AuditEventsTableTableManager(_$AppDatabase db, $AuditEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AuditEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AuditEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AuditEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> entityType = const Value.absent(),
+                Value<String> entityId = const Value.absent(),
+                Value<String> action = const Value.absent(),
+                Value<String> technicianUid = const Value.absent(),
+                Value<DateTime> occurredAt = const Value.absent(),
+                Value<String?> metadataJson = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AuditEventsCompanion(
+                id: id,
+                entityType: entityType,
+                entityId: entityId,
+                action: action,
+                technicianUid: technicianUid,
+                occurredAt: occurredAt,
+                metadataJson: metadataJson,
+                synced: synced,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String entityType,
+                required String entityId,
+                required String action,
+                required String technicianUid,
+                required DateTime occurredAt,
+                Value<String?> metadataJson = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AuditEventsCompanion.insert(
+                id: id,
+                entityType: entityType,
+                entityId: entityId,
+                action: action,
+                technicianUid: technicianUid,
+                occurredAt: occurredAt,
+                metadataJson: metadataJson,
+                synced: synced,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AuditEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AuditEventsTable,
+      AuditEvent,
+      $$AuditEventsTableFilterComposer,
+      $$AuditEventsTableOrderingComposer,
+      $$AuditEventsTableAnnotationComposer,
+      $$AuditEventsTableCreateCompanionBuilder,
+      $$AuditEventsTableUpdateCompanionBuilder,
+      (
+        AuditEvent,
+        BaseReferences<_$AppDatabase, $AuditEventsTable, AuditEvent>,
+      ),
+      AuditEvent,
+      PrefetchHooks Function()
+    >;
+typedef $$OutboxItemsTableCreateCompanionBuilder =
+    OutboxItemsCompanion Function({
+      Value<int> id,
+      required String type,
+      required String entityType,
+      required String entityLocalId,
+      required String payloadJson,
+      required DateTime createdAt,
+      Value<OutboxStatus> status,
+      Value<int> retryCount,
+      Value<DateTime?> lastAttemptAt,
+      Value<String?> lastError,
+    });
+typedef $$OutboxItemsTableUpdateCompanionBuilder =
+    OutboxItemsCompanion Function({
+      Value<int> id,
+      Value<String> type,
+      Value<String> entityType,
+      Value<String> entityLocalId,
+      Value<String> payloadJson,
+      Value<DateTime> createdAt,
+      Value<OutboxStatus> status,
+      Value<int> retryCount,
+      Value<DateTime?> lastAttemptAt,
+      Value<String?> lastError,
+    });
+
+class $$OutboxItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $OutboxItemsTable> {
+  $$OutboxItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityLocalId => $composableBuilder(
+    column: $table.entityLocalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<OutboxStatus, OutboxStatus, String>
+  get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$OutboxItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $OutboxItemsTable> {
+  $$OutboxItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityLocalId => $composableBuilder(
+    column: $table.entityLocalId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$OutboxItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $OutboxItemsTable> {
+  $$OutboxItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get entityLocalId => $composableBuilder(
+    column: $table.entityLocalId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<OutboxStatus, String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get retryCount => $composableBuilder(
+    column: $table.retryCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+}
+
+class $$OutboxItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $OutboxItemsTable,
+          OutboxItem,
+          $$OutboxItemsTableFilterComposer,
+          $$OutboxItemsTableOrderingComposer,
+          $$OutboxItemsTableAnnotationComposer,
+          $$OutboxItemsTableCreateCompanionBuilder,
+          $$OutboxItemsTableUpdateCompanionBuilder,
+          (
+            OutboxItem,
+            BaseReferences<_$AppDatabase, $OutboxItemsTable, OutboxItem>,
+          ),
+          OutboxItem,
+          PrefetchHooks Function()
+        > {
+  $$OutboxItemsTableTableManager(_$AppDatabase db, $OutboxItemsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OutboxItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OutboxItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OutboxItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> entityType = const Value.absent(),
+                Value<String> entityLocalId = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<OutboxStatus> status = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<DateTime?> lastAttemptAt = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+              }) => OutboxItemsCompanion(
+                id: id,
+                type: type,
+                entityType: entityType,
+                entityLocalId: entityLocalId,
+                payloadJson: payloadJson,
+                createdAt: createdAt,
+                status: status,
+                retryCount: retryCount,
+                lastAttemptAt: lastAttemptAt,
+                lastError: lastError,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String type,
+                required String entityType,
+                required String entityLocalId,
+                required String payloadJson,
+                required DateTime createdAt,
+                Value<OutboxStatus> status = const Value.absent(),
+                Value<int> retryCount = const Value.absent(),
+                Value<DateTime?> lastAttemptAt = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+              }) => OutboxItemsCompanion.insert(
+                id: id,
+                type: type,
+                entityType: entityType,
+                entityLocalId: entityLocalId,
+                payloadJson: payloadJson,
+                createdAt: createdAt,
+                status: status,
+                retryCount: retryCount,
+                lastAttemptAt: lastAttemptAt,
+                lastError: lastError,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$OutboxItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $OutboxItemsTable,
+      OutboxItem,
+      $$OutboxItemsTableFilterComposer,
+      $$OutboxItemsTableOrderingComposer,
+      $$OutboxItemsTableAnnotationComposer,
+      $$OutboxItemsTableCreateCompanionBuilder,
+      $$OutboxItemsTableUpdateCompanionBuilder,
+      (
+        OutboxItem,
+        BaseReferences<_$AppDatabase, $OutboxItemsTable, OutboxItem>,
+      ),
+      OutboxItem,
+      PrefetchHooks Function()
+    >;
+
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
+  $$InspectionsTableTableManager get inspections =>
+      $$InspectionsTableTableManager(_db, _db.inspections);
+  $$TasksTableTableManager get tasks =>
+      $$TasksTableTableManager(_db, _db.tasks);
+  $$AuditEventsTableTableManager get auditEvents =>
+      $$AuditEventsTableTableManager(_db, _db.auditEvents);
+  $$OutboxItemsTableTableManager get outboxItems =>
+      $$OutboxItemsTableTableManager(_db, _db.outboxItems);
+}
