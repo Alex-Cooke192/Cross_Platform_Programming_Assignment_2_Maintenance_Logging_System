@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'task_detail_screen.dart';
+
 
 class InspectionListScreen extends StatelessWidget {
   const InspectionListScreen({super.key});
@@ -19,7 +21,12 @@ class InspectionListScreen extends StatelessWidget {
             status: index == 0 ? 'In Progress' : 'Open',
             location: 'Hangar A',
             onTap: () {
-              // Navigate to inspection detail
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const TaskDetailScreen(),
+                ),
+              );
             },
           );
         },
