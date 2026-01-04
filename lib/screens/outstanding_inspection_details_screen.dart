@@ -3,11 +3,11 @@ import '../ui_models.dart';
 import 'task_details_screen.dart';
 
 
-class InspectionDetailsScreen extends StatelessWidget {
+class OutstandingInspectionDetailsScreen extends StatelessWidget {
   final InspectionUi inspection;
   final List<TaskUi> tasks;
 
-  const InspectionDetailsScreen({
+  const OutstandingInspectionDetailsScreen({
     super.key,
     required this.inspection,
     required this.tasks,
