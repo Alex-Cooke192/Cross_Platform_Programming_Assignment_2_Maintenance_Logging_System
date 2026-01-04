@@ -8,8 +8,10 @@ import 'tables/inspections.dart';
 import 'tables/tasks.dart';
 import 'tables/audit_events.dart';
 import 'tables/outbox.dart';
+import 'converters/sync_converters.dart'; 
 
 part 'app_database.g.dart';
+
 
 @DriftDatabase(
   tables: [Inspections, Tasks, OutboxItems, AuditEvents],
