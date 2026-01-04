@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'inspection_list_screen.dart';
+import 'outstanding_inspection_list_screen.dart';
+import 'current_inspection_list_screen.dart'; 
 import '../mocks/mock_models.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -26,14 +27,14 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             _DashboardCard(
-              title: 'Assigned Inspections',
+              title: 'Assigned Inspections: Ready to begin',
               value: '3',
               icon: Icons.assignment,
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => InspectionListScreen(
+                    builder: (_) => OutstandingInspectionListScreen(
                       inspections: MockData.inspections,
                       tasks: MockData.tasks,
                     ),
@@ -44,17 +45,41 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 12),
 
             _DashboardCard(
-              title: 'In Progress',
+              title: 'Assigned Inspections: In Progress',
               value: '1',
               icon: Icons.build,
               onTap: () {
-                // later: navigate to filtered list
+                // 1) filter inspections to only "in progress"
+                final inProgress = MockData.inspections
+                    .where((i) => i.statusLabel == "In Progress") // <-- adjust to your model
+                    .toList();
+
+                // 2) navigate
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CurrentInspectionListScreen(
+                      inProgressInspections: inProgress,
+                      onOpenInspection: (inspection) {
+                        // navigate to your inspection details/resume screen
+                        // Example:
+                        // Navigator.push(context, MaterialPageRoute(builder: (_) => InspectionDetailsScreen(inspection: inspection)));
+
+                        // If you want to use your existing task screen, you can look up tasks by inspection id here.
+                      },
+                      onStartNewInspection: () {
+                        // start flow (optional)
+                      },
+                    ),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 12),
 
+
             _DashboardCard(
-              title: 'Completed • Awaiting Sync',
+              title: 'Assigned Inspections: Completed • Awaiting Sync',
               value: '2',
               icon: Icons.cloud_upload,
               onTap: () {
