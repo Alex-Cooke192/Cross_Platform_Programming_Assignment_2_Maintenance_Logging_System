@@ -48,7 +48,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 12),
 
             _DashboardCard(
-              title: 'Pending Sync',
+              title: 'Completed: Pending Sync',
               value: '2',
               icon: Icons.cloud_upload,
               onTap: () {},
