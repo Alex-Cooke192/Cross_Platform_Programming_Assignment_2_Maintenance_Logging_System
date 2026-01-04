@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import '../converters/sync_converters.dart';
 
 enum InspectionStatus { open, inProgress, closed }
 
@@ -12,7 +13,18 @@ class InspectionStatusConverter extends TypeConverter<InspectionStatus, String> 
 }
 
 class Inspections extends Table {
-  TextColumn get id => text()(); // use UUID string
+  TextColumn get id => text()(); // UUID string
+
+  // New (sync-ready)
+  TextColumn get serverId => text().nullable()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  TextColumn get syncStatus => text()
+      .map(const SyncStatusConverter())
+      .withDefault(const Constant('dirty'))();
+  DateTimeColumn get lastSyncedAt => dateTime().nullable()();
+  TextColumn get syncError => text().nullable()();
+
+  // Existing
   TextColumn get aircraftTailNumber => text()();
   TextColumn get openedByTechnicianUid => text()();
 
@@ -25,8 +37,10 @@ class Inspections extends Table {
   DateTimeColumn get lastModifiedAt => dateTime()();
   IntColumn get version => integer().withDefault(const Constant(1))();
 
+  // Legacy (keep for 1 migration, remove later if you want)
   BoolColumn get synced => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
 }
+
