@@ -18,6 +18,60 @@ class $InspectionsTable extends Inspections
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncStatus, String> syncStatus =
+      GeneratedColumn<String>(
+        'sync_status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('dirty'),
+      ).withConverter<SyncStatus>($InspectionsTable.$convertersyncStatus);
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncErrorMeta = const VerificationMeta(
+    'syncError',
+  );
+  @override
+  late final GeneratedColumn<String> syncError = GeneratedColumn<String>(
+    'sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _aircraftTailNumberMeta =
       const VerificationMeta('aircraftTailNumber');
   @override
@@ -111,6 +165,11 @@ class $InspectionsTable extends Inspections
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    serverId,
+    deletedAt,
+    syncStatus,
+    lastSyncedAt,
+    syncError,
     aircraftTailNumber,
     openedByTechnicianUid,
     openedAt,
@@ -136,6 +195,33 @@ class $InspectionsTable extends Inspections
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sync_error')) {
+      context.handle(
+        _syncErrorMeta,
+        syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
+      );
     }
     if (data.containsKey('aircraft_tail_number')) {
       context.handle(
@@ -209,6 +295,28 @@ class $InspectionsTable extends Inspections
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncStatus: $InspectionsTable.$convertersyncStatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_status'],
+        )!,
+      ),
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+      syncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_error'],
+      ),
       aircraftTailNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}aircraft_tail_number'],
@@ -251,12 +359,19 @@ class $InspectionsTable extends Inspections
     return $InspectionsTable(attachedDatabase, alias);
   }
 
+  static TypeConverter<SyncStatus, String> $convertersyncStatus =
+      const SyncStatusConverter();
   static TypeConverter<InspectionStatus, String> $converterstatus =
       const InspectionStatusConverter();
 }
 
 class Inspection extends DataClass implements Insertable<Inspection> {
   final String id;
+  final String? serverId;
+  final DateTime? deletedAt;
+  final SyncStatus syncStatus;
+  final DateTime? lastSyncedAt;
+  final String? syncError;
   final String aircraftTailNumber;
   final String openedByTechnicianUid;
   final DateTime openedAt;
@@ -267,6 +382,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
   final bool synced;
   const Inspection({
     required this.id,
+    this.serverId,
+    this.deletedAt,
+    required this.syncStatus,
+    this.lastSyncedAt,
+    this.syncError,
     required this.aircraftTailNumber,
     required this.openedByTechnicianUid,
     required this.openedAt,
@@ -280,6 +400,23 @@ class Inspection extends DataClass implements Insertable<Inspection> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_status'] = Variable<String>(
+        $InspectionsTable.$convertersyncStatus.toSql(syncStatus),
+      );
+    }
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    if (!nullToAbsent || syncError != null) {
+      map['sync_error'] = Variable<String>(syncError);
+    }
     map['aircraft_tail_number'] = Variable<String>(aircraftTailNumber);
     map['opened_by_technician_uid'] = Variable<String>(openedByTechnicianUid);
     map['opened_at'] = Variable<DateTime>(openedAt);
@@ -300,6 +437,19 @@ class Inspection extends DataClass implements Insertable<Inspection> {
   InspectionsCompanion toCompanion(bool nullToAbsent) {
     return InspectionsCompanion(
       id: Value(id),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncStatus: Value(syncStatus),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+      syncError: syncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncError),
       aircraftTailNumber: Value(aircraftTailNumber),
       openedByTechnicianUid: Value(openedByTechnicianUid),
       openedAt: Value(openedAt),
@@ -320,6 +470,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Inspection(
       id: serializer.fromJson<String>(json['id']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncStatus: serializer.fromJson<SyncStatus>(json['syncStatus']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      syncError: serializer.fromJson<String?>(json['syncError']),
       aircraftTailNumber: serializer.fromJson<String>(
         json['aircraftTailNumber'],
       ),
@@ -339,6 +494,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'serverId': serializer.toJson<String?>(serverId),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncStatus': serializer.toJson<SyncStatus>(syncStatus),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'syncError': serializer.toJson<String?>(syncError),
       'aircraftTailNumber': serializer.toJson<String>(aircraftTailNumber),
       'openedByTechnicianUid': serializer.toJson<String>(openedByTechnicianUid),
       'openedAt': serializer.toJson<DateTime>(openedAt),
@@ -352,6 +512,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
 
   Inspection copyWith({
     String? id,
+    Value<String?> serverId = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncStatus? syncStatus,
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+    Value<String?> syncError = const Value.absent(),
     String? aircraftTailNumber,
     String? openedByTechnicianUid,
     DateTime? openedAt,
@@ -362,6 +527,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
     bool? synced,
   }) => Inspection(
     id: id ?? this.id,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    syncError: syncError.present ? syncError.value : this.syncError,
     aircraftTailNumber: aircraftTailNumber ?? this.aircraftTailNumber,
     openedByTechnicianUid: openedByTechnicianUid ?? this.openedByTechnicianUid,
     openedAt: openedAt ?? this.openedAt,
@@ -374,6 +544,15 @@ class Inspection extends DataClass implements Insertable<Inspection> {
   Inspection copyWithCompanion(InspectionsCompanion data) {
     return Inspection(
       id: data.id.present ? data.id.value : this.id,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+      syncError: data.syncError.present ? data.syncError.value : this.syncError,
       aircraftTailNumber: data.aircraftTailNumber.present
           ? data.aircraftTailNumber.value
           : this.aircraftTailNumber,
@@ -395,6 +574,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
   String toString() {
     return (StringBuffer('Inspection(')
           ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('syncError: $syncError, ')
           ..write('aircraftTailNumber: $aircraftTailNumber, ')
           ..write('openedByTechnicianUid: $openedByTechnicianUid, ')
           ..write('openedAt: $openedAt, ')
@@ -410,6 +594,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
   @override
   int get hashCode => Object.hash(
     id,
+    serverId,
+    deletedAt,
+    syncStatus,
+    lastSyncedAt,
+    syncError,
     aircraftTailNumber,
     openedByTechnicianUid,
     openedAt,
@@ -424,6 +613,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
       identical(this, other) ||
       (other is Inspection &&
           other.id == this.id &&
+          other.serverId == this.serverId &&
+          other.deletedAt == this.deletedAt &&
+          other.syncStatus == this.syncStatus &&
+          other.lastSyncedAt == this.lastSyncedAt &&
+          other.syncError == this.syncError &&
           other.aircraftTailNumber == this.aircraftTailNumber &&
           other.openedByTechnicianUid == this.openedByTechnicianUid &&
           other.openedAt == this.openedAt &&
@@ -436,6 +630,11 @@ class Inspection extends DataClass implements Insertable<Inspection> {
 
 class InspectionsCompanion extends UpdateCompanion<Inspection> {
   final Value<String> id;
+  final Value<String?> serverId;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncStatus> syncStatus;
+  final Value<DateTime?> lastSyncedAt;
+  final Value<String?> syncError;
   final Value<String> aircraftTailNumber;
   final Value<String> openedByTechnicianUid;
   final Value<DateTime> openedAt;
@@ -447,6 +646,11 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
   final Value<int> rowid;
   const InspectionsCompanion({
     this.id = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.syncError = const Value.absent(),
     this.aircraftTailNumber = const Value.absent(),
     this.openedByTechnicianUid = const Value.absent(),
     this.openedAt = const Value.absent(),
@@ -459,6 +663,11 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
   });
   InspectionsCompanion.insert({
     required String id,
+    this.serverId = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.syncError = const Value.absent(),
     required String aircraftTailNumber,
     required String openedByTechnicianUid,
     required DateTime openedAt,
@@ -476,6 +685,11 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
        lastModifiedAt = Value(lastModifiedAt);
   static Insertable<Inspection> custom({
     Expression<String>? id,
+    Expression<String>? serverId,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncStatus,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<String>? syncError,
     Expression<String>? aircraftTailNumber,
     Expression<String>? openedByTechnicianUid,
     Expression<DateTime>? openedAt,
@@ -488,6 +702,11 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (serverId != null) 'server_id': serverId,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (syncError != null) 'sync_error': syncError,
       if (aircraftTailNumber != null)
         'aircraft_tail_number': aircraftTailNumber,
       if (openedByTechnicianUid != null)
@@ -504,6 +723,11 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
 
   InspectionsCompanion copyWith({
     Value<String>? id,
+    Value<String?>? serverId,
+    Value<DateTime?>? deletedAt,
+    Value<SyncStatus>? syncStatus,
+    Value<DateTime?>? lastSyncedAt,
+    Value<String?>? syncError,
     Value<String>? aircraftTailNumber,
     Value<String>? openedByTechnicianUid,
     Value<DateTime>? openedAt,
@@ -516,6 +740,11 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
   }) {
     return InspectionsCompanion(
       id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      syncError: syncError ?? this.syncError,
       aircraftTailNumber: aircraftTailNumber ?? this.aircraftTailNumber,
       openedByTechnicianUid:
           openedByTechnicianUid ?? this.openedByTechnicianUid,
@@ -534,6 +763,23 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(
+        $InspectionsTable.$convertersyncStatus.toSql(syncStatus.value),
+      );
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (syncError.present) {
+      map['sync_error'] = Variable<String>(syncError.value);
     }
     if (aircraftTailNumber.present) {
       map['aircraft_tail_number'] = Variable<String>(aircraftTailNumber.value);
@@ -573,6 +819,11 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
   String toString() {
     return (StringBuffer('InspectionsCompanion(')
           ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('syncError: $syncError, ')
           ..write('aircraftTailNumber: $aircraftTailNumber, ')
           ..write('openedByTechnicianUid: $openedByTechnicianUid, ')
           ..write('openedAt: $openedAt, ')
@@ -611,6 +862,60 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncStatus, String> syncStatus =
+      GeneratedColumn<String>(
+        'sync_status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('dirty'),
+      ).withConverter<SyncStatus>($TasksTable.$convertersyncStatus);
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncErrorMeta = const VerificationMeta(
+    'syncError',
+  );
+  @override
+  late final GeneratedColumn<String> syncError = GeneratedColumn<String>(
+    'sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _codeMeta = const VerificationMeta('code');
   @override
@@ -726,6 +1031,11 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   List<GeneratedColumn> get $columns => [
     id,
     inspectionId,
+    serverId,
+    deletedAt,
+    syncStatus,
+    lastSyncedAt,
+    syncError,
     code,
     title,
     description,
@@ -764,6 +1074,33 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
       );
     } else if (isInserting) {
       context.missing(_inspectionIdMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sync_error')) {
+      context.handle(
+        _syncErrorMeta,
+        syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
+      );
     }
     if (data.containsKey('code')) {
       context.handle(
@@ -849,6 +1186,28 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         DriftSqlType.string,
         data['${effectivePrefix}inspection_id'],
       )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncStatus: $TasksTable.$convertersyncStatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_status'],
+        )!,
+      ),
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+      syncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_error'],
+      ),
       code: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}code'],
@@ -899,6 +1258,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     return $TasksTable(attachedDatabase, alias);
   }
 
+  static TypeConverter<SyncStatus, String> $convertersyncStatus =
+      const SyncStatusConverter();
   static TypeConverter<TaskResult?, String?> $converterresult =
       const TaskResultConverter();
 }
@@ -906,6 +1267,11 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
 class Task extends DataClass implements Insertable<Task> {
   final String id;
   final String inspectionId;
+  final String? serverId;
+  final DateTime? deletedAt;
+  final SyncStatus syncStatus;
+  final DateTime? lastSyncedAt;
+  final String? syncError;
   final String? code;
   final String title;
   final String? description;
@@ -919,6 +1285,11 @@ class Task extends DataClass implements Insertable<Task> {
   const Task({
     required this.id,
     required this.inspectionId,
+    this.serverId,
+    this.deletedAt,
+    required this.syncStatus,
+    this.lastSyncedAt,
+    this.syncError,
     this.code,
     required this.title,
     this.description,
@@ -935,6 +1306,23 @@ class Task extends DataClass implements Insertable<Task> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['inspection_id'] = Variable<String>(inspectionId);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_status'] = Variable<String>(
+        $TasksTable.$convertersyncStatus.toSql(syncStatus),
+      );
+    }
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    if (!nullToAbsent || syncError != null) {
+      map['sync_error'] = Variable<String>(syncError);
+    }
     if (!nullToAbsent || code != null) {
       map['code'] = Variable<String>(code);
     }
@@ -964,6 +1352,19 @@ class Task extends DataClass implements Insertable<Task> {
     return TasksCompanion(
       id: Value(id),
       inspectionId: Value(inspectionId),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncStatus: Value(syncStatus),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+      syncError: syncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncError),
       code: code == null && nullToAbsent ? const Value.absent() : Value(code),
       title: Value(title),
       description: description == null && nullToAbsent
@@ -993,6 +1394,11 @@ class Task extends DataClass implements Insertable<Task> {
     return Task(
       id: serializer.fromJson<String>(json['id']),
       inspectionId: serializer.fromJson<String>(json['inspectionId']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncStatus: serializer.fromJson<SyncStatus>(json['syncStatus']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      syncError: serializer.fromJson<String?>(json['syncError']),
       code: serializer.fromJson<String?>(json['code']),
       title: serializer.fromJson<String>(json['title']),
       description: serializer.fromJson<String?>(json['description']),
@@ -1011,6 +1417,11 @@ class Task extends DataClass implements Insertable<Task> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'inspectionId': serializer.toJson<String>(inspectionId),
+      'serverId': serializer.toJson<String?>(serverId),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncStatus': serializer.toJson<SyncStatus>(syncStatus),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'syncError': serializer.toJson<String?>(syncError),
       'code': serializer.toJson<String?>(code),
       'title': serializer.toJson<String>(title),
       'description': serializer.toJson<String?>(description),
@@ -1027,6 +1438,11 @@ class Task extends DataClass implements Insertable<Task> {
   Task copyWith({
     String? id,
     String? inspectionId,
+    Value<String?> serverId = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncStatus? syncStatus,
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+    Value<String?> syncError = const Value.absent(),
     Value<String?> code = const Value.absent(),
     String? title,
     Value<String?> description = const Value.absent(),
@@ -1040,6 +1456,11 @@ class Task extends DataClass implements Insertable<Task> {
   }) => Task(
     id: id ?? this.id,
     inspectionId: inspectionId ?? this.inspectionId,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    syncError: syncError.present ? syncError.value : this.syncError,
     code: code.present ? code.value : this.code,
     title: title ?? this.title,
     description: description.present ? description.value : this.description,
@@ -1057,6 +1478,15 @@ class Task extends DataClass implements Insertable<Task> {
       inspectionId: data.inspectionId.present
           ? data.inspectionId.value
           : this.inspectionId,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+      syncError: data.syncError.present ? data.syncError.value : this.syncError,
       code: data.code.present ? data.code.value : this.code,
       title: data.title.present ? data.title.value : this.title,
       description: data.description.present
@@ -1081,6 +1511,11 @@ class Task extends DataClass implements Insertable<Task> {
     return (StringBuffer('Task(')
           ..write('id: $id, ')
           ..write('inspectionId: $inspectionId, ')
+          ..write('serverId: $serverId, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('syncError: $syncError, ')
           ..write('code: $code, ')
           ..write('title: $title, ')
           ..write('description: $description, ')
@@ -1099,6 +1534,11 @@ class Task extends DataClass implements Insertable<Task> {
   int get hashCode => Object.hash(
     id,
     inspectionId,
+    serverId,
+    deletedAt,
+    syncStatus,
+    lastSyncedAt,
+    syncError,
     code,
     title,
     description,
@@ -1116,6 +1556,11 @@ class Task extends DataClass implements Insertable<Task> {
       (other is Task &&
           other.id == this.id &&
           other.inspectionId == this.inspectionId &&
+          other.serverId == this.serverId &&
+          other.deletedAt == this.deletedAt &&
+          other.syncStatus == this.syncStatus &&
+          other.lastSyncedAt == this.lastSyncedAt &&
+          other.syncError == this.syncError &&
           other.code == this.code &&
           other.title == this.title &&
           other.description == this.description &&
@@ -1131,6 +1576,11 @@ class Task extends DataClass implements Insertable<Task> {
 class TasksCompanion extends UpdateCompanion<Task> {
   final Value<String> id;
   final Value<String> inspectionId;
+  final Value<String?> serverId;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncStatus> syncStatus;
+  final Value<DateTime?> lastSyncedAt;
+  final Value<String?> syncError;
   final Value<String?> code;
   final Value<String> title;
   final Value<String?> description;
@@ -1145,6 +1595,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
   const TasksCompanion({
     this.id = const Value.absent(),
     this.inspectionId = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.syncError = const Value.absent(),
     this.code = const Value.absent(),
     this.title = const Value.absent(),
     this.description = const Value.absent(),
@@ -1160,6 +1615,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
   TasksCompanion.insert({
     required String id,
     required String inspectionId,
+    this.serverId = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.syncError = const Value.absent(),
     this.code = const Value.absent(),
     required String title,
     this.description = const Value.absent(),
@@ -1178,6 +1638,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
   static Insertable<Task> custom({
     Expression<String>? id,
     Expression<String>? inspectionId,
+    Expression<String>? serverId,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncStatus,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<String>? syncError,
     Expression<String>? code,
     Expression<String>? title,
     Expression<String>? description,
@@ -1193,6 +1658,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (inspectionId != null) 'inspection_id': inspectionId,
+      if (serverId != null) 'server_id': serverId,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (syncError != null) 'sync_error': syncError,
       if (code != null) 'code': code,
       if (title != null) 'title': title,
       if (description != null) 'description': description,
@@ -1210,6 +1680,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
   TasksCompanion copyWith({
     Value<String>? id,
     Value<String>? inspectionId,
+    Value<String?>? serverId,
+    Value<DateTime?>? deletedAt,
+    Value<SyncStatus>? syncStatus,
+    Value<DateTime?>? lastSyncedAt,
+    Value<String?>? syncError,
     Value<String?>? code,
     Value<String>? title,
     Value<String?>? description,
@@ -1225,6 +1700,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
     return TasksCompanion(
       id: id ?? this.id,
       inspectionId: inspectionId ?? this.inspectionId,
+      serverId: serverId ?? this.serverId,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      syncError: syncError ?? this.syncError,
       code: code ?? this.code,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -1247,6 +1727,23 @@ class TasksCompanion extends UpdateCompanion<Task> {
     }
     if (inspectionId.present) {
       map['inspection_id'] = Variable<String>(inspectionId.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(
+        $TasksTable.$convertersyncStatus.toSql(syncStatus.value),
+      );
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (syncError.present) {
+      map['sync_error'] = Variable<String>(syncError.value);
     }
     if (code.present) {
       map['code'] = Variable<String>(code.value);
@@ -1291,6 +1788,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
     return (StringBuffer('TasksCompanion(')
           ..write('id: $id, ')
           ..write('inspectionId: $inspectionId, ')
+          ..write('serverId: $serverId, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('syncError: $syncError, ')
           ..write('code: $code, ')
           ..write('title: $title, ')
           ..write('description: $description, ')
@@ -1302,6 +1804,729 @@ class TasksCompanion extends UpdateCompanion<Task> {
           ..write('version: $version, ')
           ..write('synced: $synced, ')
           ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $OutboxItemsTable extends OutboxItems
+    with TableInfo<$OutboxItemsTable, OutboxItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OutboxItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
+    'entityType',
+  );
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityLocalIdMeta = const VerificationMeta(
+    'entityLocalId',
+  );
+  @override
+  late final GeneratedColumn<String> entityLocalId = GeneratedColumn<String>(
+    'entity_local_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<OutboxOp, String> operation =
+      GeneratedColumn<String>(
+        'operation',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('update'),
+      ).withConverter<OutboxOp>($OutboxItemsTable.$converteroperation);
+  static const VerificationMeta _idempotencyKeyMeta = const VerificationMeta(
+    'idempotencyKey',
+  );
+  @override
+  late final GeneratedColumn<String> idempotencyKey = GeneratedColumn<String>(
+    'idempotency_key',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  @override
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<OutboxStatus, String> status =
+      GeneratedColumn<String>(
+        'status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('pending'),
+      ).withConverter<OutboxStatus>($OutboxItemsTable.$converterstatus);
+  static const VerificationMeta _retryCountMeta = const VerificationMeta(
+    'retryCount',
+  );
+  @override
+  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
+    'retry_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastAttemptAtMeta = const VerificationMeta(
+    'lastAttemptAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastAttemptAt =
+      GeneratedColumn<DateTime>(
+        'last_attempt_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    type,
+    entityType,
+    entityLocalId,
+    operation,
+    idempotencyKey,
+    payloadJson,
+    createdAt,
+    status,
+    retryCount,
+    lastAttemptAt,
+    lastError,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'outbox_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<OutboxItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+        _entityTypeMeta,
+        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
+    }
+    if (data.containsKey('entity_local_id')) {
+      context.handle(
+        _entityLocalIdMeta,
+        entityLocalId.isAcceptableOrUnknown(
+          data['entity_local_id']!,
+          _entityLocalIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_entityLocalIdMeta);
+    }
+    if (data.containsKey('idempotency_key')) {
+      context.handle(
+        _idempotencyKeyMeta,
+        idempotencyKey.isAcceptableOrUnknown(
+          data['idempotency_key']!,
+          _idempotencyKeyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('retry_count')) {
+      context.handle(
+        _retryCountMeta,
+        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
+      );
+    }
+    if (data.containsKey('last_attempt_at')) {
+      context.handle(
+        _lastAttemptAtMeta,
+        lastAttemptAt.isAcceptableOrUnknown(
+          data['last_attempt_at']!,
+          _lastAttemptAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  OutboxItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OutboxItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      )!,
+      entityLocalId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_local_id'],
+      )!,
+      operation: $OutboxItemsTable.$converteroperation.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}operation'],
+        )!,
+      ),
+      idempotencyKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}idempotency_key'],
+      ),
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      status: $OutboxItemsTable.$converterstatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}status'],
+        )!,
+      ),
+      retryCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry_count'],
+      )!,
+      lastAttemptAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_attempt_at'],
+      ),
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+    );
+  }
+
+  @override
+  $OutboxItemsTable createAlias(String alias) {
+    return $OutboxItemsTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<OutboxOp, String> $converteroperation =
+      const OutboxOpConverter();
+  static TypeConverter<OutboxStatus, String> $converterstatus =
+      const OutboxStatusConverter();
+}
+
+class OutboxItem extends DataClass implements Insertable<OutboxItem> {
+  final int id;
+  final String type;
+  final String entityType;
+  final String entityLocalId;
+  final OutboxOp operation;
+  final String? idempotencyKey;
+  final String payloadJson;
+  final DateTime createdAt;
+  final OutboxStatus status;
+  final int retryCount;
+  final DateTime? lastAttemptAt;
+  final String? lastError;
+  const OutboxItem({
+    required this.id,
+    required this.type,
+    required this.entityType,
+    required this.entityLocalId,
+    required this.operation,
+    this.idempotencyKey,
+    required this.payloadJson,
+    required this.createdAt,
+    required this.status,
+    required this.retryCount,
+    this.lastAttemptAt,
+    this.lastError,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['type'] = Variable<String>(type);
+    map['entity_type'] = Variable<String>(entityType);
+    map['entity_local_id'] = Variable<String>(entityLocalId);
+    {
+      map['operation'] = Variable<String>(
+        $OutboxItemsTable.$converteroperation.toSql(operation),
+      );
+    }
+    if (!nullToAbsent || idempotencyKey != null) {
+      map['idempotency_key'] = Variable<String>(idempotencyKey);
+    }
+    map['payload_json'] = Variable<String>(payloadJson);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    {
+      map['status'] = Variable<String>(
+        $OutboxItemsTable.$converterstatus.toSql(status),
+      );
+    }
+    map['retry_count'] = Variable<int>(retryCount);
+    if (!nullToAbsent || lastAttemptAt != null) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt);
+    }
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    return map;
+  }
+
+  OutboxItemsCompanion toCompanion(bool nullToAbsent) {
+    return OutboxItemsCompanion(
+      id: Value(id),
+      type: Value(type),
+      entityType: Value(entityType),
+      entityLocalId: Value(entityLocalId),
+      operation: Value(operation),
+      idempotencyKey: idempotencyKey == null && nullToAbsent
+          ? const Value.absent()
+          : Value(idempotencyKey),
+      payloadJson: Value(payloadJson),
+      createdAt: Value(createdAt),
+      status: Value(status),
+      retryCount: Value(retryCount),
+      lastAttemptAt: lastAttemptAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastAttemptAt),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+    );
+  }
+
+  factory OutboxItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OutboxItem(
+      id: serializer.fromJson<int>(json['id']),
+      type: serializer.fromJson<String>(json['type']),
+      entityType: serializer.fromJson<String>(json['entityType']),
+      entityLocalId: serializer.fromJson<String>(json['entityLocalId']),
+      operation: serializer.fromJson<OutboxOp>(json['operation']),
+      idempotencyKey: serializer.fromJson<String?>(json['idempotencyKey']),
+      payloadJson: serializer.fromJson<String>(json['payloadJson']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      status: serializer.fromJson<OutboxStatus>(json['status']),
+      retryCount: serializer.fromJson<int>(json['retryCount']),
+      lastAttemptAt: serializer.fromJson<DateTime?>(json['lastAttemptAt']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'type': serializer.toJson<String>(type),
+      'entityType': serializer.toJson<String>(entityType),
+      'entityLocalId': serializer.toJson<String>(entityLocalId),
+      'operation': serializer.toJson<OutboxOp>(operation),
+      'idempotencyKey': serializer.toJson<String?>(idempotencyKey),
+      'payloadJson': serializer.toJson<String>(payloadJson),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'status': serializer.toJson<OutboxStatus>(status),
+      'retryCount': serializer.toJson<int>(retryCount),
+      'lastAttemptAt': serializer.toJson<DateTime?>(lastAttemptAt),
+      'lastError': serializer.toJson<String?>(lastError),
+    };
+  }
+
+  OutboxItem copyWith({
+    int? id,
+    String? type,
+    String? entityType,
+    String? entityLocalId,
+    OutboxOp? operation,
+    Value<String?> idempotencyKey = const Value.absent(),
+    String? payloadJson,
+    DateTime? createdAt,
+    OutboxStatus? status,
+    int? retryCount,
+    Value<DateTime?> lastAttemptAt = const Value.absent(),
+    Value<String?> lastError = const Value.absent(),
+  }) => OutboxItem(
+    id: id ?? this.id,
+    type: type ?? this.type,
+    entityType: entityType ?? this.entityType,
+    entityLocalId: entityLocalId ?? this.entityLocalId,
+    operation: operation ?? this.operation,
+    idempotencyKey: idempotencyKey.present
+        ? idempotencyKey.value
+        : this.idempotencyKey,
+    payloadJson: payloadJson ?? this.payloadJson,
+    createdAt: createdAt ?? this.createdAt,
+    status: status ?? this.status,
+    retryCount: retryCount ?? this.retryCount,
+    lastAttemptAt: lastAttemptAt.present
+        ? lastAttemptAt.value
+        : this.lastAttemptAt,
+    lastError: lastError.present ? lastError.value : this.lastError,
+  );
+  OutboxItem copyWithCompanion(OutboxItemsCompanion data) {
+    return OutboxItem(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      entityType: data.entityType.present
+          ? data.entityType.value
+          : this.entityType,
+      entityLocalId: data.entityLocalId.present
+          ? data.entityLocalId.value
+          : this.entityLocalId,
+      operation: data.operation.present ? data.operation.value : this.operation,
+      idempotencyKey: data.idempotencyKey.present
+          ? data.idempotencyKey.value
+          : this.idempotencyKey,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      status: data.status.present ? data.status.value : this.status,
+      retryCount: data.retryCount.present
+          ? data.retryCount.value
+          : this.retryCount,
+      lastAttemptAt: data.lastAttemptAt.present
+          ? data.lastAttemptAt.value
+          : this.lastAttemptAt,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OutboxItem(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityLocalId: $entityLocalId, ')
+          ..write('operation: $operation, ')
+          ..write('idempotencyKey: $idempotencyKey, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('status: $status, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('lastError: $lastError')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    type,
+    entityType,
+    entityLocalId,
+    operation,
+    idempotencyKey,
+    payloadJson,
+    createdAt,
+    status,
+    retryCount,
+    lastAttemptAt,
+    lastError,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OutboxItem &&
+          other.id == this.id &&
+          other.type == this.type &&
+          other.entityType == this.entityType &&
+          other.entityLocalId == this.entityLocalId &&
+          other.operation == this.operation &&
+          other.idempotencyKey == this.idempotencyKey &&
+          other.payloadJson == this.payloadJson &&
+          other.createdAt == this.createdAt &&
+          other.status == this.status &&
+          other.retryCount == this.retryCount &&
+          other.lastAttemptAt == this.lastAttemptAt &&
+          other.lastError == this.lastError);
+}
+
+class OutboxItemsCompanion extends UpdateCompanion<OutboxItem> {
+  final Value<int> id;
+  final Value<String> type;
+  final Value<String> entityType;
+  final Value<String> entityLocalId;
+  final Value<OutboxOp> operation;
+  final Value<String?> idempotencyKey;
+  final Value<String> payloadJson;
+  final Value<DateTime> createdAt;
+  final Value<OutboxStatus> status;
+  final Value<int> retryCount;
+  final Value<DateTime?> lastAttemptAt;
+  final Value<String?> lastError;
+  const OutboxItemsCompanion({
+    this.id = const Value.absent(),
+    this.type = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.entityLocalId = const Value.absent(),
+    this.operation = const Value.absent(),
+    this.idempotencyKey = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.status = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    this.lastError = const Value.absent(),
+  });
+  OutboxItemsCompanion.insert({
+    this.id = const Value.absent(),
+    required String type,
+    required String entityType,
+    required String entityLocalId,
+    this.operation = const Value.absent(),
+    this.idempotencyKey = const Value.absent(),
+    required String payloadJson,
+    required DateTime createdAt,
+    this.status = const Value.absent(),
+    this.retryCount = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    this.lastError = const Value.absent(),
+  }) : type = Value(type),
+       entityType = Value(entityType),
+       entityLocalId = Value(entityLocalId),
+       payloadJson = Value(payloadJson),
+       createdAt = Value(createdAt);
+  static Insertable<OutboxItem> custom({
+    Expression<int>? id,
+    Expression<String>? type,
+    Expression<String>? entityType,
+    Expression<String>? entityLocalId,
+    Expression<String>? operation,
+    Expression<String>? idempotencyKey,
+    Expression<String>? payloadJson,
+    Expression<DateTime>? createdAt,
+    Expression<String>? status,
+    Expression<int>? retryCount,
+    Expression<DateTime>? lastAttemptAt,
+    Expression<String>? lastError,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (type != null) 'type': type,
+      if (entityType != null) 'entity_type': entityType,
+      if (entityLocalId != null) 'entity_local_id': entityLocalId,
+      if (operation != null) 'operation': operation,
+      if (idempotencyKey != null) 'idempotency_key': idempotencyKey,
+      if (payloadJson != null) 'payload_json': payloadJson,
+      if (createdAt != null) 'created_at': createdAt,
+      if (status != null) 'status': status,
+      if (retryCount != null) 'retry_count': retryCount,
+      if (lastAttemptAt != null) 'last_attempt_at': lastAttemptAt,
+      if (lastError != null) 'last_error': lastError,
+    });
+  }
+
+  OutboxItemsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? type,
+    Value<String>? entityType,
+    Value<String>? entityLocalId,
+    Value<OutboxOp>? operation,
+    Value<String?>? idempotencyKey,
+    Value<String>? payloadJson,
+    Value<DateTime>? createdAt,
+    Value<OutboxStatus>? status,
+    Value<int>? retryCount,
+    Value<DateTime?>? lastAttemptAt,
+    Value<String?>? lastError,
+  }) {
+    return OutboxItemsCompanion(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      entityType: entityType ?? this.entityType,
+      entityLocalId: entityLocalId ?? this.entityLocalId,
+      operation: operation ?? this.operation,
+      idempotencyKey: idempotencyKey ?? this.idempotencyKey,
+      payloadJson: payloadJson ?? this.payloadJson,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+      retryCount: retryCount ?? this.retryCount,
+      lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
+      lastError: lastError ?? this.lastError,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
+    }
+    if (entityLocalId.present) {
+      map['entity_local_id'] = Variable<String>(entityLocalId.value);
+    }
+    if (operation.present) {
+      map['operation'] = Variable<String>(
+        $OutboxItemsTable.$converteroperation.toSql(operation.value),
+      );
+    }
+    if (idempotencyKey.present) {
+      map['idempotency_key'] = Variable<String>(idempotencyKey.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(
+        $OutboxItemsTable.$converterstatus.toSql(status.value),
+      );
+    }
+    if (retryCount.present) {
+      map['retry_count'] = Variable<int>(retryCount.value);
+    }
+    if (lastAttemptAt.present) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OutboxItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityLocalId: $entityLocalId, ')
+          ..write('operation: $operation, ')
+          ..write('idempotencyKey: $idempotencyKey, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('status: $status, ')
+          ..write('retryCount: $retryCount, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('lastError: $lastError')
           ..write(')'))
         .toString();
   }
@@ -1321,6 +2546,60 @@ class $AuditEventsTable extends AuditEvents
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncStatus, String> syncStatus =
+      GeneratedColumn<String>(
+        'sync_status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('dirty'),
+      ).withConverter<SyncStatus>($AuditEventsTable.$convertersyncStatus);
+  static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
+    'lastSyncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
+    'last_synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncErrorMeta = const VerificationMeta(
+    'syncError',
+  );
+  @override
+  late final GeneratedColumn<String> syncError = GeneratedColumn<String>(
+    'sync_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _entityTypeMeta = const VerificationMeta(
     'entityType',
@@ -1402,6 +2681,11 @@ class $AuditEventsTable extends AuditEvents
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    serverId,
+    deletedAt,
+    syncStatus,
+    lastSyncedAt,
+    syncError,
     entityType,
     entityId,
     action,
@@ -1426,6 +2710,33 @@ class $AuditEventsTable extends AuditEvents
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('last_synced_at')) {
+      context.handle(
+        _lastSyncedAtMeta,
+        lastSyncedAt.isAcceptableOrUnknown(
+          data['last_synced_at']!,
+          _lastSyncedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sync_error')) {
+      context.handle(
+        _syncErrorMeta,
+        syncError.isAcceptableOrUnknown(data['sync_error']!, _syncErrorMeta),
+      );
     }
     if (data.containsKey('entity_type')) {
       context.handle(
@@ -1498,6 +2809,28 @@ class $AuditEventsTable extends AuditEvents
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncStatus: $AuditEventsTable.$convertersyncStatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_status'],
+        )!,
+      ),
+      lastSyncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_synced_at'],
+      ),
+      syncError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_error'],
+      ),
       entityType: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}entity_type'],
@@ -1533,10 +2866,18 @@ class $AuditEventsTable extends AuditEvents
   $AuditEventsTable createAlias(String alias) {
     return $AuditEventsTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<SyncStatus, String> $convertersyncStatus =
+      const SyncStatusConverter();
 }
 
 class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   final String id;
+  final String? serverId;
+  final DateTime? deletedAt;
+  final SyncStatus syncStatus;
+  final DateTime? lastSyncedAt;
+  final String? syncError;
   final String entityType;
   final String entityId;
   final String action;
@@ -1546,6 +2887,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   final bool synced;
   const AuditEvent({
     required this.id,
+    this.serverId,
+    this.deletedAt,
+    required this.syncStatus,
+    this.lastSyncedAt,
+    this.syncError,
     required this.entityType,
     required this.entityId,
     required this.action,
@@ -1558,6 +2904,23 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_status'] = Variable<String>(
+        $AuditEventsTable.$convertersyncStatus.toSql(syncStatus),
+      );
+    }
+    if (!nullToAbsent || lastSyncedAt != null) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
+    }
+    if (!nullToAbsent || syncError != null) {
+      map['sync_error'] = Variable<String>(syncError);
+    }
     map['entity_type'] = Variable<String>(entityType);
     map['entity_id'] = Variable<String>(entityId);
     map['action'] = Variable<String>(action);
@@ -1573,6 +2936,19 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   AuditEventsCompanion toCompanion(bool nullToAbsent) {
     return AuditEventsCompanion(
       id: Value(id),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncStatus: Value(syncStatus),
+      lastSyncedAt: lastSyncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncedAt),
+      syncError: syncError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncError),
       entityType: Value(entityType),
       entityId: Value(entityId),
       action: Value(action),
@@ -1592,6 +2968,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AuditEvent(
       id: serializer.fromJson<String>(json['id']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncStatus: serializer.fromJson<SyncStatus>(json['syncStatus']),
+      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      syncError: serializer.fromJson<String?>(json['syncError']),
       entityType: serializer.fromJson<String>(json['entityType']),
       entityId: serializer.fromJson<String>(json['entityId']),
       action: serializer.fromJson<String>(json['action']),
@@ -1606,6 +2987,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'serverId': serializer.toJson<String?>(serverId),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncStatus': serializer.toJson<SyncStatus>(syncStatus),
+      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'syncError': serializer.toJson<String?>(syncError),
       'entityType': serializer.toJson<String>(entityType),
       'entityId': serializer.toJson<String>(entityId),
       'action': serializer.toJson<String>(action),
@@ -1618,6 +3004,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
 
   AuditEvent copyWith({
     String? id,
+    Value<String?> serverId = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncStatus? syncStatus,
+    Value<DateTime?> lastSyncedAt = const Value.absent(),
+    Value<String?> syncError = const Value.absent(),
     String? entityType,
     String? entityId,
     String? action,
@@ -1627,6 +3018,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
     bool? synced,
   }) => AuditEvent(
     id: id ?? this.id,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncStatus: syncStatus ?? this.syncStatus,
+    lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    syncError: syncError.present ? syncError.value : this.syncError,
     entityType: entityType ?? this.entityType,
     entityId: entityId ?? this.entityId,
     action: action ?? this.action,
@@ -1638,6 +3034,15 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   AuditEvent copyWithCompanion(AuditEventsCompanion data) {
     return AuditEvent(
       id: data.id.present ? data.id.value : this.id,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      lastSyncedAt: data.lastSyncedAt.present
+          ? data.lastSyncedAt.value
+          : this.lastSyncedAt,
+      syncError: data.syncError.present ? data.syncError.value : this.syncError,
       entityType: data.entityType.present
           ? data.entityType.value
           : this.entityType,
@@ -1660,6 +3065,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   String toString() {
     return (StringBuffer('AuditEvent(')
           ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('syncError: $syncError, ')
           ..write('entityType: $entityType, ')
           ..write('entityId: $entityId, ')
           ..write('action: $action, ')
@@ -1674,6 +3084,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   @override
   int get hashCode => Object.hash(
     id,
+    serverId,
+    deletedAt,
+    syncStatus,
+    lastSyncedAt,
+    syncError,
     entityType,
     entityId,
     action,
@@ -1687,6 +3102,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       identical(this, other) ||
       (other is AuditEvent &&
           other.id == this.id &&
+          other.serverId == this.serverId &&
+          other.deletedAt == this.deletedAt &&
+          other.syncStatus == this.syncStatus &&
+          other.lastSyncedAt == this.lastSyncedAt &&
+          other.syncError == this.syncError &&
           other.entityType == this.entityType &&
           other.entityId == this.entityId &&
           other.action == this.action &&
@@ -1698,6 +3118,11 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
 
 class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   final Value<String> id;
+  final Value<String?> serverId;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncStatus> syncStatus;
+  final Value<DateTime?> lastSyncedAt;
+  final Value<String?> syncError;
   final Value<String> entityType;
   final Value<String> entityId;
   final Value<String> action;
@@ -1708,6 +3133,11 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   final Value<int> rowid;
   const AuditEventsCompanion({
     this.id = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.syncError = const Value.absent(),
     this.entityType = const Value.absent(),
     this.entityId = const Value.absent(),
     this.action = const Value.absent(),
@@ -1719,6 +3149,11 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   });
   AuditEventsCompanion.insert({
     required String id,
+    this.serverId = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSyncedAt = const Value.absent(),
+    this.syncError = const Value.absent(),
     required String entityType,
     required String entityId,
     required String action,
@@ -1735,6 +3170,11 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
        occurredAt = Value(occurredAt);
   static Insertable<AuditEvent> custom({
     Expression<String>? id,
+    Expression<String>? serverId,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncStatus,
+    Expression<DateTime>? lastSyncedAt,
+    Expression<String>? syncError,
     Expression<String>? entityType,
     Expression<String>? entityId,
     Expression<String>? action,
@@ -1746,6 +3186,11 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (serverId != null) 'server_id': serverId,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncStatus != null) 'sync_status': syncStatus,
+      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (syncError != null) 'sync_error': syncError,
       if (entityType != null) 'entity_type': entityType,
       if (entityId != null) 'entity_id': entityId,
       if (action != null) 'action': action,
@@ -1759,6 +3204,11 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
 
   AuditEventsCompanion copyWith({
     Value<String>? id,
+    Value<String?>? serverId,
+    Value<DateTime?>? deletedAt,
+    Value<SyncStatus>? syncStatus,
+    Value<DateTime?>? lastSyncedAt,
+    Value<String?>? syncError,
     Value<String>? entityType,
     Value<String>? entityId,
     Value<String>? action,
@@ -1770,6 +3220,11 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   }) {
     return AuditEventsCompanion(
       id: id ?? this.id,
+      serverId: serverId ?? this.serverId,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
+      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      syncError: syncError ?? this.syncError,
       entityType: entityType ?? this.entityType,
       entityId: entityId ?? this.entityId,
       action: action ?? this.action,
@@ -1786,6 +3241,23 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncStatus.present) {
+      map['sync_status'] = Variable<String>(
+        $AuditEventsTable.$convertersyncStatus.toSql(syncStatus.value),
+      );
+    }
+    if (lastSyncedAt.present) {
+      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (syncError.present) {
+      map['sync_error'] = Variable<String>(syncError.value);
     }
     if (entityType.present) {
       map['entity_type'] = Variable<String>(entityType.value);
@@ -1818,6 +3290,11 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   String toString() {
     return (StringBuffer('AuditEventsCompanion(')
           ..write('id: $id, ')
+          ..write('serverId: $serverId, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('syncError: $syncError, ')
           ..write('entityType: $entityType, ')
           ..write('entityId: $entityId, ')
           ..write('action: $action, ')
@@ -1831,632 +3308,13 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   }
 }
 
-class $OutboxItemsTable extends OutboxItems
-    with TableInfo<$OutboxItemsTable, OutboxItem> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $OutboxItemsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
-  @override
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-    'type',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
-    'entityType',
-  );
-  @override
-  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
-    'entity_type',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _entityLocalIdMeta = const VerificationMeta(
-    'entityLocalId',
-  );
-  @override
-  late final GeneratedColumn<String> entityLocalId = GeneratedColumn<String>(
-    'entity_local_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
-    'payloadJson',
-  );
-  @override
-  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
-    'payload_json',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  @override
-  late final GeneratedColumnWithTypeConverter<OutboxStatus, String> status =
-      GeneratedColumn<String>(
-        'status',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant('pending'),
-      ).withConverter<OutboxStatus>($OutboxItemsTable.$converterstatus);
-  static const VerificationMeta _retryCountMeta = const VerificationMeta(
-    'retryCount',
-  );
-  @override
-  late final GeneratedColumn<int> retryCount = GeneratedColumn<int>(
-    'retry_count',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _lastAttemptAtMeta = const VerificationMeta(
-    'lastAttemptAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> lastAttemptAt =
-      GeneratedColumn<DateTime>(
-        'last_attempt_at',
-        aliasedName,
-        true,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: false,
-      );
-  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
-    'lastError',
-  );
-  @override
-  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
-    'last_error',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    type,
-    entityType,
-    entityLocalId,
-    payloadJson,
-    createdAt,
-    status,
-    retryCount,
-    lastAttemptAt,
-    lastError,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'outbox_items';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<OutboxItem> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('type')) {
-      context.handle(
-        _typeMeta,
-        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_typeMeta);
-    }
-    if (data.containsKey('entity_type')) {
-      context.handle(
-        _entityTypeMeta,
-        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_entityTypeMeta);
-    }
-    if (data.containsKey('entity_local_id')) {
-      context.handle(
-        _entityLocalIdMeta,
-        entityLocalId.isAcceptableOrUnknown(
-          data['entity_local_id']!,
-          _entityLocalIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_entityLocalIdMeta);
-    }
-    if (data.containsKey('payload_json')) {
-      context.handle(
-        _payloadJsonMeta,
-        payloadJson.isAcceptableOrUnknown(
-          data['payload_json']!,
-          _payloadJsonMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_payloadJsonMeta);
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtMeta);
-    }
-    if (data.containsKey('retry_count')) {
-      context.handle(
-        _retryCountMeta,
-        retryCount.isAcceptableOrUnknown(data['retry_count']!, _retryCountMeta),
-      );
-    }
-    if (data.containsKey('last_attempt_at')) {
-      context.handle(
-        _lastAttemptAtMeta,
-        lastAttemptAt.isAcceptableOrUnknown(
-          data['last_attempt_at']!,
-          _lastAttemptAtMeta,
-        ),
-      );
-    }
-    if (data.containsKey('last_error')) {
-      context.handle(
-        _lastErrorMeta,
-        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  OutboxItem map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return OutboxItem(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      type: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}type'],
-      )!,
-      entityType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}entity_type'],
-      )!,
-      entityLocalId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}entity_local_id'],
-      )!,
-      payloadJson: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}payload_json'],
-      )!,
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      status: $OutboxItemsTable.$converterstatus.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}status'],
-        )!,
-      ),
-      retryCount: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}retry_count'],
-      )!,
-      lastAttemptAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}last_attempt_at'],
-      ),
-      lastError: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_error'],
-      ),
-    );
-  }
-
-  @override
-  $OutboxItemsTable createAlias(String alias) {
-    return $OutboxItemsTable(attachedDatabase, alias);
-  }
-
-  static TypeConverter<OutboxStatus, String> $converterstatus =
-      const OutboxStatusConverter();
-}
-
-class OutboxItem extends DataClass implements Insertable<OutboxItem> {
-  final int id;
-  final String type;
-  final String entityType;
-  final String entityLocalId;
-  final String payloadJson;
-  final DateTime createdAt;
-  final OutboxStatus status;
-  final int retryCount;
-  final DateTime? lastAttemptAt;
-  final String? lastError;
-  const OutboxItem({
-    required this.id,
-    required this.type,
-    required this.entityType,
-    required this.entityLocalId,
-    required this.payloadJson,
-    required this.createdAt,
-    required this.status,
-    required this.retryCount,
-    this.lastAttemptAt,
-    this.lastError,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['type'] = Variable<String>(type);
-    map['entity_type'] = Variable<String>(entityType);
-    map['entity_local_id'] = Variable<String>(entityLocalId);
-    map['payload_json'] = Variable<String>(payloadJson);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    {
-      map['status'] = Variable<String>(
-        $OutboxItemsTable.$converterstatus.toSql(status),
-      );
-    }
-    map['retry_count'] = Variable<int>(retryCount);
-    if (!nullToAbsent || lastAttemptAt != null) {
-      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt);
-    }
-    if (!nullToAbsent || lastError != null) {
-      map['last_error'] = Variable<String>(lastError);
-    }
-    return map;
-  }
-
-  OutboxItemsCompanion toCompanion(bool nullToAbsent) {
-    return OutboxItemsCompanion(
-      id: Value(id),
-      type: Value(type),
-      entityType: Value(entityType),
-      entityLocalId: Value(entityLocalId),
-      payloadJson: Value(payloadJson),
-      createdAt: Value(createdAt),
-      status: Value(status),
-      retryCount: Value(retryCount),
-      lastAttemptAt: lastAttemptAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastAttemptAt),
-      lastError: lastError == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastError),
-    );
-  }
-
-  factory OutboxItem.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return OutboxItem(
-      id: serializer.fromJson<int>(json['id']),
-      type: serializer.fromJson<String>(json['type']),
-      entityType: serializer.fromJson<String>(json['entityType']),
-      entityLocalId: serializer.fromJson<String>(json['entityLocalId']),
-      payloadJson: serializer.fromJson<String>(json['payloadJson']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      status: serializer.fromJson<OutboxStatus>(json['status']),
-      retryCount: serializer.fromJson<int>(json['retryCount']),
-      lastAttemptAt: serializer.fromJson<DateTime?>(json['lastAttemptAt']),
-      lastError: serializer.fromJson<String?>(json['lastError']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'type': serializer.toJson<String>(type),
-      'entityType': serializer.toJson<String>(entityType),
-      'entityLocalId': serializer.toJson<String>(entityLocalId),
-      'payloadJson': serializer.toJson<String>(payloadJson),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'status': serializer.toJson<OutboxStatus>(status),
-      'retryCount': serializer.toJson<int>(retryCount),
-      'lastAttemptAt': serializer.toJson<DateTime?>(lastAttemptAt),
-      'lastError': serializer.toJson<String?>(lastError),
-    };
-  }
-
-  OutboxItem copyWith({
-    int? id,
-    String? type,
-    String? entityType,
-    String? entityLocalId,
-    String? payloadJson,
-    DateTime? createdAt,
-    OutboxStatus? status,
-    int? retryCount,
-    Value<DateTime?> lastAttemptAt = const Value.absent(),
-    Value<String?> lastError = const Value.absent(),
-  }) => OutboxItem(
-    id: id ?? this.id,
-    type: type ?? this.type,
-    entityType: entityType ?? this.entityType,
-    entityLocalId: entityLocalId ?? this.entityLocalId,
-    payloadJson: payloadJson ?? this.payloadJson,
-    createdAt: createdAt ?? this.createdAt,
-    status: status ?? this.status,
-    retryCount: retryCount ?? this.retryCount,
-    lastAttemptAt: lastAttemptAt.present
-        ? lastAttemptAt.value
-        : this.lastAttemptAt,
-    lastError: lastError.present ? lastError.value : this.lastError,
-  );
-  OutboxItem copyWithCompanion(OutboxItemsCompanion data) {
-    return OutboxItem(
-      id: data.id.present ? data.id.value : this.id,
-      type: data.type.present ? data.type.value : this.type,
-      entityType: data.entityType.present
-          ? data.entityType.value
-          : this.entityType,
-      entityLocalId: data.entityLocalId.present
-          ? data.entityLocalId.value
-          : this.entityLocalId,
-      payloadJson: data.payloadJson.present
-          ? data.payloadJson.value
-          : this.payloadJson,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      status: data.status.present ? data.status.value : this.status,
-      retryCount: data.retryCount.present
-          ? data.retryCount.value
-          : this.retryCount,
-      lastAttemptAt: data.lastAttemptAt.present
-          ? data.lastAttemptAt.value
-          : this.lastAttemptAt,
-      lastError: data.lastError.present ? data.lastError.value : this.lastError,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('OutboxItem(')
-          ..write('id: $id, ')
-          ..write('type: $type, ')
-          ..write('entityType: $entityType, ')
-          ..write('entityLocalId: $entityLocalId, ')
-          ..write('payloadJson: $payloadJson, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('status: $status, ')
-          ..write('retryCount: $retryCount, ')
-          ..write('lastAttemptAt: $lastAttemptAt, ')
-          ..write('lastError: $lastError')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    type,
-    entityType,
-    entityLocalId,
-    payloadJson,
-    createdAt,
-    status,
-    retryCount,
-    lastAttemptAt,
-    lastError,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is OutboxItem &&
-          other.id == this.id &&
-          other.type == this.type &&
-          other.entityType == this.entityType &&
-          other.entityLocalId == this.entityLocalId &&
-          other.payloadJson == this.payloadJson &&
-          other.createdAt == this.createdAt &&
-          other.status == this.status &&
-          other.retryCount == this.retryCount &&
-          other.lastAttemptAt == this.lastAttemptAt &&
-          other.lastError == this.lastError);
-}
-
-class OutboxItemsCompanion extends UpdateCompanion<OutboxItem> {
-  final Value<int> id;
-  final Value<String> type;
-  final Value<String> entityType;
-  final Value<String> entityLocalId;
-  final Value<String> payloadJson;
-  final Value<DateTime> createdAt;
-  final Value<OutboxStatus> status;
-  final Value<int> retryCount;
-  final Value<DateTime?> lastAttemptAt;
-  final Value<String?> lastError;
-  const OutboxItemsCompanion({
-    this.id = const Value.absent(),
-    this.type = const Value.absent(),
-    this.entityType = const Value.absent(),
-    this.entityLocalId = const Value.absent(),
-    this.payloadJson = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.status = const Value.absent(),
-    this.retryCount = const Value.absent(),
-    this.lastAttemptAt = const Value.absent(),
-    this.lastError = const Value.absent(),
-  });
-  OutboxItemsCompanion.insert({
-    this.id = const Value.absent(),
-    required String type,
-    required String entityType,
-    required String entityLocalId,
-    required String payloadJson,
-    required DateTime createdAt,
-    this.status = const Value.absent(),
-    this.retryCount = const Value.absent(),
-    this.lastAttemptAt = const Value.absent(),
-    this.lastError = const Value.absent(),
-  }) : type = Value(type),
-       entityType = Value(entityType),
-       entityLocalId = Value(entityLocalId),
-       payloadJson = Value(payloadJson),
-       createdAt = Value(createdAt);
-  static Insertable<OutboxItem> custom({
-    Expression<int>? id,
-    Expression<String>? type,
-    Expression<String>? entityType,
-    Expression<String>? entityLocalId,
-    Expression<String>? payloadJson,
-    Expression<DateTime>? createdAt,
-    Expression<String>? status,
-    Expression<int>? retryCount,
-    Expression<DateTime>? lastAttemptAt,
-    Expression<String>? lastError,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (type != null) 'type': type,
-      if (entityType != null) 'entity_type': entityType,
-      if (entityLocalId != null) 'entity_local_id': entityLocalId,
-      if (payloadJson != null) 'payload_json': payloadJson,
-      if (createdAt != null) 'created_at': createdAt,
-      if (status != null) 'status': status,
-      if (retryCount != null) 'retry_count': retryCount,
-      if (lastAttemptAt != null) 'last_attempt_at': lastAttemptAt,
-      if (lastError != null) 'last_error': lastError,
-    });
-  }
-
-  OutboxItemsCompanion copyWith({
-    Value<int>? id,
-    Value<String>? type,
-    Value<String>? entityType,
-    Value<String>? entityLocalId,
-    Value<String>? payloadJson,
-    Value<DateTime>? createdAt,
-    Value<OutboxStatus>? status,
-    Value<int>? retryCount,
-    Value<DateTime?>? lastAttemptAt,
-    Value<String?>? lastError,
-  }) {
-    return OutboxItemsCompanion(
-      id: id ?? this.id,
-      type: type ?? this.type,
-      entityType: entityType ?? this.entityType,
-      entityLocalId: entityLocalId ?? this.entityLocalId,
-      payloadJson: payloadJson ?? this.payloadJson,
-      createdAt: createdAt ?? this.createdAt,
-      status: status ?? this.status,
-      retryCount: retryCount ?? this.retryCount,
-      lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
-      lastError: lastError ?? this.lastError,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (type.present) {
-      map['type'] = Variable<String>(type.value);
-    }
-    if (entityType.present) {
-      map['entity_type'] = Variable<String>(entityType.value);
-    }
-    if (entityLocalId.present) {
-      map['entity_local_id'] = Variable<String>(entityLocalId.value);
-    }
-    if (payloadJson.present) {
-      map['payload_json'] = Variable<String>(payloadJson.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (status.present) {
-      map['status'] = Variable<String>(
-        $OutboxItemsTable.$converterstatus.toSql(status.value),
-      );
-    }
-    if (retryCount.present) {
-      map['retry_count'] = Variable<int>(retryCount.value);
-    }
-    if (lastAttemptAt.present) {
-      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt.value);
-    }
-    if (lastError.present) {
-      map['last_error'] = Variable<String>(lastError.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('OutboxItemsCompanion(')
-          ..write('id: $id, ')
-          ..write('type: $type, ')
-          ..write('entityType: $entityType, ')
-          ..write('entityLocalId: $entityLocalId, ')
-          ..write('payloadJson: $payloadJson, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('status: $status, ')
-          ..write('retryCount: $retryCount, ')
-          ..write('lastAttemptAt: $lastAttemptAt, ')
-          ..write('lastError: $lastError')
-          ..write(')'))
-        .toString();
-  }
-}
-
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $InspectionsTable inspections = $InspectionsTable(this);
   late final $TasksTable tasks = $TasksTable(this);
-  late final $AuditEventsTable auditEvents = $AuditEventsTable(this);
   late final $OutboxItemsTable outboxItems = $OutboxItemsTable(this);
+  late final $AuditEventsTable auditEvents = $AuditEventsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2464,14 +3322,19 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     inspections,
     tasks,
-    auditEvents,
     outboxItems,
+    auditEvents,
   ];
 }
 
 typedef $$InspectionsTableCreateCompanionBuilder =
     InspectionsCompanion Function({
       required String id,
+      Value<String?> serverId,
+      Value<DateTime?> deletedAt,
+      Value<SyncStatus> syncStatus,
+      Value<DateTime?> lastSyncedAt,
+      Value<String?> syncError,
       required String aircraftTailNumber,
       required String openedByTechnicianUid,
       required DateTime openedAt,
@@ -2485,6 +3348,11 @@ typedef $$InspectionsTableCreateCompanionBuilder =
 typedef $$InspectionsTableUpdateCompanionBuilder =
     InspectionsCompanion Function({
       Value<String> id,
+      Value<String?> serverId,
+      Value<DateTime?> deletedAt,
+      Value<SyncStatus> syncStatus,
+      Value<DateTime?> lastSyncedAt,
+      Value<String?> syncError,
       Value<String> aircraftTailNumber,
       Value<String> openedByTechnicianUid,
       Value<DateTime> openedAt,
@@ -2507,6 +3375,32 @@ class $$InspectionsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncStatus, SyncStatus, String>
+  get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncError => $composableBuilder(
+    column: $table.syncError,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2566,6 +3460,31 @@ class $$InspectionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncError => $composableBuilder(
+    column: $table.syncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get aircraftTailNumber => $composableBuilder(
     column: $table.aircraftTailNumber,
     builder: (column) => ColumnOrderings(column),
@@ -2618,6 +3537,26 @@ class $$InspectionsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncStatus, String> get syncStatus =>
+      $composableBuilder(
+        column: $table.syncStatus,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncError =>
+      $composableBuilder(column: $table.syncError, builder: (column) => column);
 
   GeneratedColumn<String> get aircraftTailNumber => $composableBuilder(
     column: $table.aircraftTailNumber,
@@ -2682,6 +3621,11 @@ class $$InspectionsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
                 Value<String> aircraftTailNumber = const Value.absent(),
                 Value<String> openedByTechnicianUid = const Value.absent(),
                 Value<DateTime> openedAt = const Value.absent(),
@@ -2693,6 +3637,11 @@ class $$InspectionsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => InspectionsCompanion(
                 id: id,
+                serverId: serverId,
+                deletedAt: deletedAt,
+                syncStatus: syncStatus,
+                lastSyncedAt: lastSyncedAt,
+                syncError: syncError,
                 aircraftTailNumber: aircraftTailNumber,
                 openedByTechnicianUid: openedByTechnicianUid,
                 openedAt: openedAt,
@@ -2706,6 +3655,11 @@ class $$InspectionsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
+                Value<String?> serverId = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
                 required String aircraftTailNumber,
                 required String openedByTechnicianUid,
                 required DateTime openedAt,
@@ -2717,6 +3671,11 @@ class $$InspectionsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => InspectionsCompanion.insert(
                 id: id,
+                serverId: serverId,
+                deletedAt: deletedAt,
+                syncStatus: syncStatus,
+                lastSyncedAt: lastSyncedAt,
+                syncError: syncError,
                 aircraftTailNumber: aircraftTailNumber,
                 openedByTechnicianUid: openedByTechnicianUid,
                 openedAt: openedAt,
@@ -2756,6 +3715,11 @@ typedef $$TasksTableCreateCompanionBuilder =
     TasksCompanion Function({
       required String id,
       required String inspectionId,
+      Value<String?> serverId,
+      Value<DateTime?> deletedAt,
+      Value<SyncStatus> syncStatus,
+      Value<DateTime?> lastSyncedAt,
+      Value<String?> syncError,
       Value<String?> code,
       required String title,
       Value<String?> description,
@@ -2772,6 +3736,11 @@ typedef $$TasksTableUpdateCompanionBuilder =
     TasksCompanion Function({
       Value<String> id,
       Value<String> inspectionId,
+      Value<String?> serverId,
+      Value<DateTime?> deletedAt,
+      Value<SyncStatus> syncStatus,
+      Value<DateTime?> lastSyncedAt,
+      Value<String?> syncError,
       Value<String?> code,
       Value<String> title,
       Value<String?> description,
@@ -2800,6 +3769,32 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
 
   ColumnFilters<String> get inspectionId => $composableBuilder(
     column: $table.inspectionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncStatus, SyncStatus, String>
+  get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncError => $composableBuilder(
+    column: $table.syncError,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2874,6 +3869,31 @@ class $$TasksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncError => $composableBuilder(
+    column: $table.syncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get code => $composableBuilder(
     column: $table.code,
     builder: (column) => ColumnOrderings(column),
@@ -2942,6 +3962,26 @@ class $$TasksTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncStatus, String> get syncStatus =>
+      $composableBuilder(
+        column: $table.syncStatus,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncError =>
+      $composableBuilder(column: $table.syncError, builder: (column) => column);
+
   GeneratedColumn<String> get code =>
       $composableBuilder(column: $table.code, builder: (column) => column);
 
@@ -3009,6 +4049,11 @@ class $$TasksTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> inspectionId = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
                 Value<String?> code = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String?> description = const Value.absent(),
@@ -3023,6 +4068,11 @@ class $$TasksTableTableManager
               }) => TasksCompanion(
                 id: id,
                 inspectionId: inspectionId,
+                serverId: serverId,
+                deletedAt: deletedAt,
+                syncStatus: syncStatus,
+                lastSyncedAt: lastSyncedAt,
+                syncError: syncError,
                 code: code,
                 title: title,
                 description: description,
@@ -3039,6 +4089,11 @@ class $$TasksTableTableManager
               ({
                 required String id,
                 required String inspectionId,
+                Value<String?> serverId = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
                 Value<String?> code = const Value.absent(),
                 required String title,
                 Value<String?> description = const Value.absent(),
@@ -3053,6 +4108,11 @@ class $$TasksTableTableManager
               }) => TasksCompanion.insert(
                 id: id,
                 inspectionId: inspectionId,
+                serverId: serverId,
+                deletedAt: deletedAt,
+                syncStatus: syncStatus,
+                lastSyncedAt: lastSyncedAt,
+                syncError: syncError,
                 code: code,
                 title: title,
                 description: description,
@@ -3087,277 +4147,14 @@ typedef $$TasksTableProcessedTableManager =
       Task,
       PrefetchHooks Function()
     >;
-typedef $$AuditEventsTableCreateCompanionBuilder =
-    AuditEventsCompanion Function({
-      required String id,
-      required String entityType,
-      required String entityId,
-      required String action,
-      required String technicianUid,
-      required DateTime occurredAt,
-      Value<String?> metadataJson,
-      Value<bool> synced,
-      Value<int> rowid,
-    });
-typedef $$AuditEventsTableUpdateCompanionBuilder =
-    AuditEventsCompanion Function({
-      Value<String> id,
-      Value<String> entityType,
-      Value<String> entityId,
-      Value<String> action,
-      Value<String> technicianUid,
-      Value<DateTime> occurredAt,
-      Value<String?> metadataJson,
-      Value<bool> synced,
-      Value<int> rowid,
-    });
-
-class $$AuditEventsTableFilterComposer
-    extends Composer<_$AppDatabase, $AuditEventsTable> {
-  $$AuditEventsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get entityType => $composableBuilder(
-    column: $table.entityType,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get entityId => $composableBuilder(
-    column: $table.entityId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get action => $composableBuilder(
-    column: $table.action,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get technicianUid => $composableBuilder(
-    column: $table.technicianUid,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
-    column: $table.occurredAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get metadataJson => $composableBuilder(
-    column: $table.metadataJson,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get synced => $composableBuilder(
-    column: $table.synced,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$AuditEventsTableOrderingComposer
-    extends Composer<_$AppDatabase, $AuditEventsTable> {
-  $$AuditEventsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get entityType => $composableBuilder(
-    column: $table.entityType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get entityId => $composableBuilder(
-    column: $table.entityId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get action => $composableBuilder(
-    column: $table.action,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get technicianUid => $composableBuilder(
-    column: $table.technicianUid,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
-    column: $table.occurredAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get metadataJson => $composableBuilder(
-    column: $table.metadataJson,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get synced => $composableBuilder(
-    column: $table.synced,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$AuditEventsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $AuditEventsTable> {
-  $$AuditEventsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get entityType => $composableBuilder(
-    column: $table.entityType,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get entityId =>
-      $composableBuilder(column: $table.entityId, builder: (column) => column);
-
-  GeneratedColumn<String> get action =>
-      $composableBuilder(column: $table.action, builder: (column) => column);
-
-  GeneratedColumn<String> get technicianUid => $composableBuilder(
-    column: $table.technicianUid,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
-    column: $table.occurredAt,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get metadataJson => $composableBuilder(
-    column: $table.metadataJson,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get synced =>
-      $composableBuilder(column: $table.synced, builder: (column) => column);
-}
-
-class $$AuditEventsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $AuditEventsTable,
-          AuditEvent,
-          $$AuditEventsTableFilterComposer,
-          $$AuditEventsTableOrderingComposer,
-          $$AuditEventsTableAnnotationComposer,
-          $$AuditEventsTableCreateCompanionBuilder,
-          $$AuditEventsTableUpdateCompanionBuilder,
-          (
-            AuditEvent,
-            BaseReferences<_$AppDatabase, $AuditEventsTable, AuditEvent>,
-          ),
-          AuditEvent,
-          PrefetchHooks Function()
-        > {
-  $$AuditEventsTableTableManager(_$AppDatabase db, $AuditEventsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$AuditEventsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$AuditEventsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$AuditEventsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> entityType = const Value.absent(),
-                Value<String> entityId = const Value.absent(),
-                Value<String> action = const Value.absent(),
-                Value<String> technicianUid = const Value.absent(),
-                Value<DateTime> occurredAt = const Value.absent(),
-                Value<String?> metadataJson = const Value.absent(),
-                Value<bool> synced = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => AuditEventsCompanion(
-                id: id,
-                entityType: entityType,
-                entityId: entityId,
-                action: action,
-                technicianUid: technicianUid,
-                occurredAt: occurredAt,
-                metadataJson: metadataJson,
-                synced: synced,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String entityType,
-                required String entityId,
-                required String action,
-                required String technicianUid,
-                required DateTime occurredAt,
-                Value<String?> metadataJson = const Value.absent(),
-                Value<bool> synced = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => AuditEventsCompanion.insert(
-                id: id,
-                entityType: entityType,
-                entityId: entityId,
-                action: action,
-                technicianUid: technicianUid,
-                occurredAt: occurredAt,
-                metadataJson: metadataJson,
-                synced: synced,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$AuditEventsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $AuditEventsTable,
-      AuditEvent,
-      $$AuditEventsTableFilterComposer,
-      $$AuditEventsTableOrderingComposer,
-      $$AuditEventsTableAnnotationComposer,
-      $$AuditEventsTableCreateCompanionBuilder,
-      $$AuditEventsTableUpdateCompanionBuilder,
-      (
-        AuditEvent,
-        BaseReferences<_$AppDatabase, $AuditEventsTable, AuditEvent>,
-      ),
-      AuditEvent,
-      PrefetchHooks Function()
-    >;
 typedef $$OutboxItemsTableCreateCompanionBuilder =
     OutboxItemsCompanion Function({
       Value<int> id,
       required String type,
       required String entityType,
       required String entityLocalId,
+      Value<OutboxOp> operation,
+      Value<String?> idempotencyKey,
       required String payloadJson,
       required DateTime createdAt,
       Value<OutboxStatus> status,
@@ -3371,6 +4168,8 @@ typedef $$OutboxItemsTableUpdateCompanionBuilder =
       Value<String> type,
       Value<String> entityType,
       Value<String> entityLocalId,
+      Value<OutboxOp> operation,
+      Value<String?> idempotencyKey,
       Value<String> payloadJson,
       Value<DateTime> createdAt,
       Value<OutboxStatus> status,
@@ -3405,6 +4204,17 @@ class $$OutboxItemsTableFilterComposer
 
   ColumnFilters<String> get entityLocalId => $composableBuilder(
     column: $table.entityLocalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<OutboxOp, OutboxOp, String> get operation =>
+      $composableBuilder(
+        column: $table.operation,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get idempotencyKey => $composableBuilder(
+    column: $table.idempotencyKey,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3469,6 +4279,16 @@ class $$OutboxItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get operation => $composableBuilder(
+    column: $table.operation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get idempotencyKey => $composableBuilder(
+    column: $table.idempotencyKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get payloadJson => $composableBuilder(
     column: $table.payloadJson,
     builder: (column) => ColumnOrderings(column),
@@ -3522,6 +4342,14 @@ class $$OutboxItemsTableAnnotationComposer
 
   GeneratedColumn<String> get entityLocalId => $composableBuilder(
     column: $table.entityLocalId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<OutboxOp, String> get operation =>
+      $composableBuilder(column: $table.operation, builder: (column) => column);
+
+  GeneratedColumn<String> get idempotencyKey => $composableBuilder(
+    column: $table.idempotencyKey,
     builder: (column) => column,
   );
 
@@ -3585,6 +4413,8 @@ class $$OutboxItemsTableTableManager
                 Value<String> type = const Value.absent(),
                 Value<String> entityType = const Value.absent(),
                 Value<String> entityLocalId = const Value.absent(),
+                Value<OutboxOp> operation = const Value.absent(),
+                Value<String?> idempotencyKey = const Value.absent(),
                 Value<String> payloadJson = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<OutboxStatus> status = const Value.absent(),
@@ -3596,6 +4426,8 @@ class $$OutboxItemsTableTableManager
                 type: type,
                 entityType: entityType,
                 entityLocalId: entityLocalId,
+                operation: operation,
+                idempotencyKey: idempotencyKey,
                 payloadJson: payloadJson,
                 createdAt: createdAt,
                 status: status,
@@ -3609,6 +4441,8 @@ class $$OutboxItemsTableTableManager
                 required String type,
                 required String entityType,
                 required String entityLocalId,
+                Value<OutboxOp> operation = const Value.absent(),
+                Value<String?> idempotencyKey = const Value.absent(),
                 required String payloadJson,
                 required DateTime createdAt,
                 Value<OutboxStatus> status = const Value.absent(),
@@ -3620,6 +4454,8 @@ class $$OutboxItemsTableTableManager
                 type: type,
                 entityType: entityType,
                 entityLocalId: entityLocalId,
+                operation: operation,
+                idempotencyKey: idempotencyKey,
                 payloadJson: payloadJson,
                 createdAt: createdAt,
                 status: status,
@@ -3652,6 +4488,372 @@ typedef $$OutboxItemsTableProcessedTableManager =
       OutboxItem,
       PrefetchHooks Function()
     >;
+typedef $$AuditEventsTableCreateCompanionBuilder =
+    AuditEventsCompanion Function({
+      required String id,
+      Value<String?> serverId,
+      Value<DateTime?> deletedAt,
+      Value<SyncStatus> syncStatus,
+      Value<DateTime?> lastSyncedAt,
+      Value<String?> syncError,
+      required String entityType,
+      required String entityId,
+      required String action,
+      required String technicianUid,
+      required DateTime occurredAt,
+      Value<String?> metadataJson,
+      Value<bool> synced,
+      Value<int> rowid,
+    });
+typedef $$AuditEventsTableUpdateCompanionBuilder =
+    AuditEventsCompanion Function({
+      Value<String> id,
+      Value<String?> serverId,
+      Value<DateTime?> deletedAt,
+      Value<SyncStatus> syncStatus,
+      Value<DateTime?> lastSyncedAt,
+      Value<String?> syncError,
+      Value<String> entityType,
+      Value<String> entityId,
+      Value<String> action,
+      Value<String> technicianUid,
+      Value<DateTime> occurredAt,
+      Value<String?> metadataJson,
+      Value<bool> synced,
+      Value<int> rowid,
+    });
+
+class $$AuditEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncStatus, SyncStatus, String>
+  get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncError => $composableBuilder(
+    column: $table.syncError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get technicianUid => $composableBuilder(
+    column: $table.technicianUid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AuditEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serverId => $composableBuilder(
+    column: $table.serverId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncError => $composableBuilder(
+    column: $table.syncError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get technicianUid => $composableBuilder(
+    column: $table.technicianUid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get synced => $composableBuilder(
+    column: $table.synced,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AuditEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AuditEventsTable> {
+  $$AuditEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get serverId =>
+      $composableBuilder(column: $table.serverId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncStatus, String> get syncStatus =>
+      $composableBuilder(
+        column: $table.syncStatus,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
+    column: $table.lastSyncedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get syncError =>
+      $composableBuilder(column: $table.syncError, builder: (column) => column);
+
+  GeneratedColumn<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<String> get technicianUid => $composableBuilder(
+    column: $table.technicianUid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get synced =>
+      $composableBuilder(column: $table.synced, builder: (column) => column);
+}
+
+class $$AuditEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AuditEventsTable,
+          AuditEvent,
+          $$AuditEventsTableFilterComposer,
+          $$AuditEventsTableOrderingComposer,
+          $$AuditEventsTableAnnotationComposer,
+          $$AuditEventsTableCreateCompanionBuilder,
+          $$AuditEventsTableUpdateCompanionBuilder,
+          (
+            AuditEvent,
+            BaseReferences<_$AppDatabase, $AuditEventsTable, AuditEvent>,
+          ),
+          AuditEvent,
+          PrefetchHooks Function()
+        > {
+  $$AuditEventsTableTableManager(_$AppDatabase db, $AuditEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AuditEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AuditEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AuditEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> serverId = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
+                Value<String> entityType = const Value.absent(),
+                Value<String> entityId = const Value.absent(),
+                Value<String> action = const Value.absent(),
+                Value<String> technicianUid = const Value.absent(),
+                Value<DateTime> occurredAt = const Value.absent(),
+                Value<String?> metadataJson = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AuditEventsCompanion(
+                id: id,
+                serverId: serverId,
+                deletedAt: deletedAt,
+                syncStatus: syncStatus,
+                lastSyncedAt: lastSyncedAt,
+                syncError: syncError,
+                entityType: entityType,
+                entityId: entityId,
+                action: action,
+                technicianUid: technicianUid,
+                occurredAt: occurredAt,
+                metadataJson: metadataJson,
+                synced: synced,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> serverId = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String?> syncError = const Value.absent(),
+                required String entityType,
+                required String entityId,
+                required String action,
+                required String technicianUid,
+                required DateTime occurredAt,
+                Value<String?> metadataJson = const Value.absent(),
+                Value<bool> synced = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AuditEventsCompanion.insert(
+                id: id,
+                serverId: serverId,
+                deletedAt: deletedAt,
+                syncStatus: syncStatus,
+                lastSyncedAt: lastSyncedAt,
+                syncError: syncError,
+                entityType: entityType,
+                entityId: entityId,
+                action: action,
+                technicianUid: technicianUid,
+                occurredAt: occurredAt,
+                metadataJson: metadataJson,
+                synced: synced,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AuditEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AuditEventsTable,
+      AuditEvent,
+      $$AuditEventsTableFilterComposer,
+      $$AuditEventsTableOrderingComposer,
+      $$AuditEventsTableAnnotationComposer,
+      $$AuditEventsTableCreateCompanionBuilder,
+      $$AuditEventsTableUpdateCompanionBuilder,
+      (
+        AuditEvent,
+        BaseReferences<_$AppDatabase, $AuditEventsTable, AuditEvent>,
+      ),
+      AuditEvent,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3660,8 +4862,8 @@ class $AppDatabaseManager {
       $$InspectionsTableTableManager(_db, _db.inspections);
   $$TasksTableTableManager get tasks =>
       $$TasksTableTableManager(_db, _db.tasks);
-  $$AuditEventsTableTableManager get auditEvents =>
-      $$AuditEventsTableTableManager(_db, _db.auditEvents);
   $$OutboxItemsTableTableManager get outboxItems =>
       $$OutboxItemsTableTableManager(_db, _db.outboxItems);
+  $$AuditEventsTableTableManager get auditEvents =>
+      $$AuditEventsTableTableManager(_db, _db.auditEvents);
 }
