@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:maintenance_logging_system/core/theme/app_theme.dart';
 import 'package:maintenance_logging_system/core/theme/theme_controller.dart';
+import 'package:maintenance_logging_system/screens/home_screen.dart';
 import 'package:maintenance_logging_system/screens/login_screen.dart';
 
 final ThemeController themeController = ThemeController();
@@ -31,7 +32,8 @@ class AppRoot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const LoginScreen();
+    // retrurn const LoginScreen(); 
+    return const HomeScreen(); // This is just for development, to skip login
   }
 }
 
