@@ -7,7 +7,7 @@ class InspectionUi {
   final String statusLabel;
 
   const InspectionUi({
-    required this.id,
+    required this.id, 
     required this.aircraftTailNumber,
     required this.openedByTechnicianUid,
     required this.openedAt,
