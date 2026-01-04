@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'inspection_list_screen.dart';
+import '../mocks/mock_models.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -32,7 +33,10 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const InspectionListScreen(),
+                    builder: (_) => InspectionListScreen(
+                      inspections: MockData.inspections,
+                      tasks: MockData.tasks,
+                    ),
                   ),
                 );
               },
@@ -43,15 +47,19 @@ class HomeScreen extends StatelessWidget {
               title: 'In Progress',
               value: '1',
               icon: Icons.build,
-              onTap: () {},
+              onTap: () {
+                // later: navigate to filtered list
+              },
             ),
             const SizedBox(height: 12),
 
             _DashboardCard(
-              title: 'Completed: Pending Sync',
+              title: 'Completed • Awaiting Sync',
               value: '2',
               icon: Icons.cloud_upload,
-              onTap: () {},
+              onTap: () {
+                // later: navigate to completed+dirty list
+              },
             ),
           ],
         ),
