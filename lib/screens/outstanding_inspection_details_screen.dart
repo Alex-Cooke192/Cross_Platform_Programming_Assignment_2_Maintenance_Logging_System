@@ -2,16 +2,25 @@ import 'package:flutter/material.dart';
 import '../ui_models.dart';
 import 'outstanding_task_details_screen.dart';
 
-
 class OutstandingInspectionDetailsScreen extends StatelessWidget {
   final InspectionUi inspection;
   final List<TaskUi> tasks;
+
+  /// How many inspections are currently in progress (to enforce max 3).
+  final int inProgressCount;
+
+  /// What should happen when the user starts this inspection.
+  final VoidCallback onStartInspection;
 
   const OutstandingInspectionDetailsScreen({
     super.key,
     required this.inspection,
     required this.tasks,
+    required this.inProgressCount,
+    required this.onStartInspection,
   });
+
+  static const int kMaxInProgressInspections = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +30,8 @@ class OutstandingInspectionDetailsScreen extends StatelessWidget {
       return a.title.compareTo(b.title);
     });
 
+    final canStart = inProgressCount < kMaxInProgressInspections;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Inspection Details')),
       body: Padding(
@@ -29,6 +40,20 @@ class OutstandingInspectionDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _InspectionHeaderCard(inspection: inspection),
+
+            // Start Inspection button
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('Start inspection'),
+                onPressed: canStart
+                    ? onStartInspection
+                    : () => _showLimitDialog(context, inProgressCount),
+              ),
+            ),
+
             const SizedBox(height: 16),
 
             const Text(
@@ -64,6 +89,26 @@ class OutstandingInspectionDetailsScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _showLimitDialog(BuildContext context, int count) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Limit reached'),
+        content: Text(
+          'You already have $count inspections in progress.\n\n'
+          'A maximum of $kMaxInProgressInspections can be in progress at any time. '
+          'Finish one before starting another.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _InspectionHeaderCard extends StatelessWidget {
@@ -92,7 +137,7 @@ class _InspectionHeaderCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text('Opened by: ${inspection.openedByTechnicianUid}'),
             const SizedBox(height: 4),
-            Text('Opened: ${inspection.openedAt.toLocal()}'),
+            Text('Opened: ${inspection.openedAt?.toLocal()}'),
             const SizedBox(height: 4),
             Text(closedText),
           ],
@@ -130,5 +175,6 @@ class _TaskTile extends StatelessWidget {
     );
   }
 }
+
 
 
