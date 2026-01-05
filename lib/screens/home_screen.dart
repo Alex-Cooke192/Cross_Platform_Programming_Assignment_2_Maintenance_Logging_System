@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'outstanding_inspection_list_screen.dart';
 import 'current_inspection_list_screen.dart'; 
 import '../mocks/mock_models.dart';
+import '../widgets/signed_in_as_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,7 +13,10 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('RampCheck'),
         actions: const [
-          Icon(Icons.sync), // later: sync status indicator
+          SignedInAs(userLabel: 'user.name'),
+          SizedBox(width: 12),
+          Icon(Icons.sync), //later: sync status indicator
+          SizedBox(width: 12),
         ],
       ),
       body: Padding(
