@@ -149,7 +149,9 @@ class _InspectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final started = _formatDateTime(inspection.openedAt);
+    final started = inspection.openedAt == null
+      ? '—'
+      : _formatDateTime(inspection.openedAt!);
 
     return Card(
       child: ListTile(
