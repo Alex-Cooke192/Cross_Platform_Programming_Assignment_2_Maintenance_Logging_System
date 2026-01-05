@@ -11,11 +11,17 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('RampCheck'),
+
+        leadingWidth: 180,
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: SignedInAs(userLabel: 'user.name'),
+        ),
+
         actions: const [
-          SignedInAs(userLabel: 'user.name'),
-          SizedBox(width: 12),
-          Icon(Icons.sync), //later: sync status indicator
+          Icon(Icons.sync), // later: sync status indicator
           SizedBox(width: 12),
         ],
       ),
