@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:maintenance_logging_system/services/inspection_service.dart';
 import '../ui_models.dart';
 import 'outstanding_inspection_details_screen.dart';
+import 'package:maintenance_logging_system/services/start_inspection.dart';
 
-class OutstandingInspectionListScreen extends StatelessWidget {
+class OutstandingInspectionListScreen extends StatefulWidget {
   final List<InspectionUi> inspections;
   final List<TaskUi> tasks;
 
@@ -13,17 +15,41 @@ class OutstandingInspectionListScreen extends StatelessWidget {
   });
 
   @override
+  State<OutstandingInspectionListScreen> createState() =>
+      _OutstandingInspectionListScreenState();
+}
+
+class _OutstandingInspectionListScreenState
+    extends State<OutstandingInspectionListScreen> {
+  late List<InspectionUi> _inspections;
+
+  late final InspectionService _inspectionService;
+
+  @override
+  void initState() {
+    super.initState();
+    _inspections = widget.inspections;
+
+    // Service instance (not static)
+    _inspectionService = InspectionService(StartInspection());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Find the number of in progress inspections
+    final inProgressCount =
+        _inspectionService.inProgressCount(_inspections); // or compute here
+
     return Scaffold(
       appBar: AppBar(title: const Text('Inspections')),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
-        itemCount: inspections.length,
+        itemCount: _inspections.length,
         separatorBuilder: (_, __) => const SizedBox(height: 8),
         itemBuilder: (context, index) {
-          final inspection = inspections[index];
+          final inspection = _inspections[index];
           final tasksForInspection =
-              tasks.where((t) => t.inspectionId == inspection.id).toList();
+              widget.tasks.where((t) => t.inspectionId == inspection.id).toList();
 
           return Card(
             child: ListTile(
@@ -39,6 +65,17 @@ class OutstandingInspectionListScreen extends StatelessWidget {
                     builder: (_) => OutstandingInspectionDetailsScreen(
                       inspection: inspection,
                       tasks: tasksForInspection,
+                      inProgressCount: inProgressCount,
+                      onStartInspection: _inspectionService.buildStartInspectionCallback(
+                        inspection: inspection,
+                        getAll: () => _inspections,
+                        applyUpdated: (updated) {
+                          setState(() {
+                            _inspections = updated;
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
                   ),
                 );
