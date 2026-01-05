@@ -80,11 +80,6 @@ class HomeScreen extends StatelessWidget {
                     builder: (_) => CurrentInspectionListScreen(
                       inProgressInspections: inProgress,
                       tasksForInspection: _tasksForInspection,
-                      onMarkInspectionComplete: (inspection) =>
-                          _markInspectionComplete(context, inspection),
-                      onPauseInspection: (inspection) =>
-                          _pauseInspection(context, inspection),
-                      onStartNewInspection: () => _startNewInspection(context),
                     ),
                   ),
                 );

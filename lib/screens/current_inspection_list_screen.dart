@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import '../models/ui_models.dart';
+import 'current_inspection_details_screen.dart';
 
 const int kMaxInProgressInspections = 3;
 
 class CurrentInspectionListScreen extends StatelessWidget {
   final List<InspectionUi> inProgressInspections;
 
-  /// Called when the user taps an inspection in the list.
-  final void Function(InspectionUi inspection) onOpenInspection;
-
-  /// Called when user presses "Start inspection" and under the limit.
-  final VoidCallback onStartNewInspection;
+  /// Return the tasks for a given inspection (so the list screen can open details with tasks).
+  final List<TaskUi> Function(InspectionUi inspection) tasksForInspection;
 
   const CurrentInspectionListScreen({
     super.key,
     required this.inProgressInspections,
-    required this.onOpenInspection,
-    required this.onStartNewInspection,
+    required this.tasksForInspection,
   });
 
   @override
@@ -30,7 +27,9 @@ class CurrentInspectionListScreen extends StatelessWidget {
         title: const Text('Current Inspections'),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: canStart ? onStartNewInspection : () => _showLimitDialog(context, count),
+        onPressed: canStart
+            ? () => _startNewInspection(context)
+            : () => _showLimitDialog(context, count),
         icon: const Icon(Icons.add),
         label: const Text('Start inspection'),
       ),
@@ -55,7 +54,7 @@ class CurrentInspectionListScreen extends StatelessWidget {
                         final inspection = inProgressInspections[index];
                         return _InspectionCard(
                           inspection: inspection,
-                          onTap: () => onOpenInspection(inspection),
+                          onTap: () => _openInspection(context, inspection),
                         );
                       },
                     ),
@@ -64,6 +63,52 @@ class CurrentInspectionListScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _openInspection(BuildContext context, InspectionUi inspection) {
+    final tasks = tasksForInspection(inspection);
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => CurrentInspectionDetailsScreen(
+          inspection: inspection,
+          tasks: tasks,
+
+          // These are now handled inside this screen (not passed from HomeScreen).
+          onMarkComplete: () => _markInspectionComplete(context, inspection),
+          onPauseInspection: () => _pauseInspection(context, inspection),
+        ),
+      ),
+    );
+  }
+
+  void _startNewInspection(BuildContext context) {
+    // Later: this should open an "Outstanding list" or create a new in-progress record in SQLite.
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Start inspection (TODO: hook up local persistence)'),
+      ),
+    );
+  }
+
+  void _markInspectionComplete(BuildContext context, InspectionUi inspection) {
+    // Later: update in SQLite -> status=Completed, completedAt=now, then refresh state.
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Marked ${inspection.id} complete (TODO: persist)')),
+    );
+
+    // Optional: pop back to the list after marking complete
+    Navigator.of(context).pop();
+  }
+
+  void _pauseInspection(BuildContext context, InspectionUi inspection) {
+    // Later: update in SQLite -> status=Outstanding/Paused, etc., then refresh state.
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Paused ${inspection.id} (TODO: persist)')),
+    );
+
+    // Optional: pop back to the list after pausing
+    Navigator.of(context).pop();
   }
 
   void _showLimitDialog(BuildContext context, int count) {
@@ -149,9 +194,7 @@ class _InspectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final started = inspection.openedAt == null
-      ? '—'
-      : _formatDateTime(inspection.openedAt!);
+    final started = inspection.openedAt == null ? '—' : _formatDateTime(inspection.openedAt!);
 
     return Card(
       child: ListTile(
@@ -164,7 +207,7 @@ class _InspectionCard extends StatelessWidget {
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [      
+          children: [
             const SizedBox(height: 2),
             Text('Started: $started'),
           ],
