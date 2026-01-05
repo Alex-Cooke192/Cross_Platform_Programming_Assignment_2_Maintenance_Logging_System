@@ -1,4 +1,4 @@
-import '../ui_models.dart';
+import '../models/ui_models.dart';
 
 class StartInspection {
   static const int maxInProgress = 3;

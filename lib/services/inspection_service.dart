@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../ui_models.dart';
+import '../models/ui_models.dart';
 import 'start_inspection.dart';
 
 class InspectionService {

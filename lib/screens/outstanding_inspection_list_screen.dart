@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maintenance_logging_system/services/inspection_service.dart';
-import '../ui_models.dart';
+import '../models/ui_models.dart';
 import 'outstanding_inspection_details_screen.dart';
 import 'package:maintenance_logging_system/services/start_inspection.dart';
 

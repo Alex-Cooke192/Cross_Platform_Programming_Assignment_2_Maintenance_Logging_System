@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../ui_models.dart';
+import '../models/ui_models.dart';
 import 'outstanding_task_details_screen.dart';
 
 class OutstandingInspectionDetailsScreen extends StatelessWidget {

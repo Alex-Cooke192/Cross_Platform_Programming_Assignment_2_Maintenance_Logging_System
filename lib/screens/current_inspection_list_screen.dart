@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../ui_models.dart';
+import '../models/ui_models.dart';
 
 const int kMaxInProgressInspections = 3;
 
