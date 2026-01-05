@@ -12,12 +12,14 @@ import 'tables/inspections.dart';
 import 'tables/tasks.dart';
 import 'tables/evidence.dart';
 import 'tables/audit_events.dart';
-import 'tables/outbox.dart';
+import 'tables/outbox_items.dart';
 import 'tables/sync_state.dart';
 import 'tables/local_cache.dart';
 
 // DAOs
 import 'daos/inspection_dao.dart';
+import 'daos/task_dao.dart';
+import 'daos/outbox_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -34,6 +36,8 @@ part 'app_database.g.dart';
   ],
   daos: [
     InspectionDao,
+    TaskDao, 
+    OutboxDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
