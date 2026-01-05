@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../ui_models.dart';
-import 'task_details_screen.dart';
+import 'outstanding_task_details_screen.dart';
 
 
 class OutstandingInspectionDetailsScreen extends StatelessWidget {
@@ -51,7 +51,7 @@ class OutstandingInspectionDetailsScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => TaskDetailsScreen(task: task),
+                                builder: (_) => OutstandingTaskDetailsScreen(task: task),
                               ),
                             );
                           },
