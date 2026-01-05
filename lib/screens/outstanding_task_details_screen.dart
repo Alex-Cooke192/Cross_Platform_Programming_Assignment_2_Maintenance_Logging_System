@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../ui_models.dart';
+import '../models/ui_models.dart';
 
 class OutstandingTaskDetailsScreen extends StatelessWidget {
   final TaskUi task;
