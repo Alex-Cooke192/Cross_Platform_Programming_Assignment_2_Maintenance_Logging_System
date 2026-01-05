@@ -708,16 +708,18 @@ class $InspectionsTable extends Inspections
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
   @override
-  late final GeneratedColumnWithTypeConverter<SyncStatus, String> syncStatus =
-      GeneratedColumn<String>(
-        'sync_status',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant('dirty'),
-      ).withConverter<SyncStatus>($InspectionsTable.$convertersyncStatus);
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('dirty'),
+  );
   static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
     'lastSyncedAt',
   );
@@ -784,15 +786,15 @@ class $InspectionsTable extends Inspections
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumnWithTypeConverter<InspectionStatus, String> status =
-      GeneratedColumn<String>(
-        'status',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      ).withConverter<InspectionStatus>($InspectionsTable.$converterstatus);
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _lastModifiedAtMeta = const VerificationMeta(
     'lastModifiedAt',
   );
@@ -876,6 +878,12 @@ class $InspectionsTable extends Inspections
         deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
       );
     }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
     if (data.containsKey('last_synced_at')) {
       context.handle(
         _lastSyncedAtMeta,
@@ -927,6 +935,14 @@ class $InspectionsTable extends Inspections
         closedAt.isAcceptableOrUnknown(data['closed_at']!, _closedAtMeta),
       );
     }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
     if (data.containsKey('last_modified_at')) {
       context.handle(
         _lastModifiedAtMeta,
@@ -971,12 +987,10 @@ class $InspectionsTable extends Inspections
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
       ),
-      syncStatus: $InspectionsTable.$convertersyncStatus.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}sync_status'],
-        )!,
-      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -1001,12 +1015,10 @@ class $InspectionsTable extends Inspections
         DriftSqlType.dateTime,
         data['${effectivePrefix}closed_at'],
       ),
-      status: $InspectionsTable.$converterstatus.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}status'],
-        )!,
-      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
       lastModifiedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_modified_at'],
@@ -1026,25 +1038,27 @@ class $InspectionsTable extends Inspections
   $InspectionsTable createAlias(String alias) {
     return $InspectionsTable(attachedDatabase, alias);
   }
-
-  static TypeConverter<SyncStatus, String> $convertersyncStatus =
-      const SyncStatusConverter();
-  static TypeConverter<InspectionStatus, String> $converterstatus =
-      const InspectionStatusConverter();
 }
 
 class Inspection extends DataClass implements Insertable<Inspection> {
   final String id;
   final String? serverId;
   final DateTime? deletedAt;
-  final SyncStatus syncStatus;
+
+  /// e.g. 'dirty', 'clean', 'error' (if you still want this concept).
+  /// If you don’t, you can delete this column entirely.
+  final String syncStatus;
   final DateTime? lastSyncedAt;
   final String? syncError;
   final String aircraftTailNumber;
   final String openedByTechnicianUid;
   final DateTime openedAt;
   final DateTime? closedAt;
-  final InspectionStatus status;
+
+  /// Workflow status for UI buckets (string-only).
+  /// Suggested values: 'outstanding', 'in_progress', 'completed_awaiting_sync'
+  /// (or if you prefer: 'open', 'in_progress', 'closed')
+  final String status;
   final DateTime lastModifiedAt;
   final int version;
   final bool synced;
@@ -1074,11 +1088,7 @@ class Inspection extends DataClass implements Insertable<Inspection> {
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    {
-      map['sync_status'] = Variable<String>(
-        $InspectionsTable.$convertersyncStatus.toSql(syncStatus),
-      );
-    }
+    map['sync_status'] = Variable<String>(syncStatus);
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -1091,11 +1101,7 @@ class Inspection extends DataClass implements Insertable<Inspection> {
     if (!nullToAbsent || closedAt != null) {
       map['closed_at'] = Variable<DateTime>(closedAt);
     }
-    {
-      map['status'] = Variable<String>(
-        $InspectionsTable.$converterstatus.toSql(status),
-      );
-    }
+    map['status'] = Variable<String>(status);
     map['last_modified_at'] = Variable<DateTime>(lastModifiedAt);
     map['version'] = Variable<int>(version);
     map['synced'] = Variable<bool>(synced);
@@ -1140,7 +1146,7 @@ class Inspection extends DataClass implements Insertable<Inspection> {
       id: serializer.fromJson<String>(json['id']),
       serverId: serializer.fromJson<String?>(json['serverId']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      syncStatus: serializer.fromJson<SyncStatus>(json['syncStatus']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       syncError: serializer.fromJson<String?>(json['syncError']),
       aircraftTailNumber: serializer.fromJson<String>(
@@ -1151,7 +1157,7 @@ class Inspection extends DataClass implements Insertable<Inspection> {
       ),
       openedAt: serializer.fromJson<DateTime>(json['openedAt']),
       closedAt: serializer.fromJson<DateTime?>(json['closedAt']),
-      status: serializer.fromJson<InspectionStatus>(json['status']),
+      status: serializer.fromJson<String>(json['status']),
       lastModifiedAt: serializer.fromJson<DateTime>(json['lastModifiedAt']),
       version: serializer.fromJson<int>(json['version']),
       synced: serializer.fromJson<bool>(json['synced']),
@@ -1164,14 +1170,14 @@ class Inspection extends DataClass implements Insertable<Inspection> {
       'id': serializer.toJson<String>(id),
       'serverId': serializer.toJson<String?>(serverId),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'syncStatus': serializer.toJson<SyncStatus>(syncStatus),
+      'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'syncError': serializer.toJson<String?>(syncError),
       'aircraftTailNumber': serializer.toJson<String>(aircraftTailNumber),
       'openedByTechnicianUid': serializer.toJson<String>(openedByTechnicianUid),
       'openedAt': serializer.toJson<DateTime>(openedAt),
       'closedAt': serializer.toJson<DateTime?>(closedAt),
-      'status': serializer.toJson<InspectionStatus>(status),
+      'status': serializer.toJson<String>(status),
       'lastModifiedAt': serializer.toJson<DateTime>(lastModifiedAt),
       'version': serializer.toJson<int>(version),
       'synced': serializer.toJson<bool>(synced),
@@ -1182,14 +1188,14 @@ class Inspection extends DataClass implements Insertable<Inspection> {
     String? id,
     Value<String?> serverId = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    SyncStatus? syncStatus,
+    String? syncStatus,
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     Value<String?> syncError = const Value.absent(),
     String? aircraftTailNumber,
     String? openedByTechnicianUid,
     DateTime? openedAt,
     Value<DateTime?> closedAt = const Value.absent(),
-    InspectionStatus? status,
+    String? status,
     DateTime? lastModifiedAt,
     int? version,
     bool? synced,
@@ -1300,14 +1306,14 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
   final Value<String> id;
   final Value<String?> serverId;
   final Value<DateTime?> deletedAt;
-  final Value<SyncStatus> syncStatus;
+  final Value<String> syncStatus;
   final Value<DateTime?> lastSyncedAt;
   final Value<String?> syncError;
   final Value<String> aircraftTailNumber;
   final Value<String> openedByTechnicianUid;
   final Value<DateTime> openedAt;
   final Value<DateTime?> closedAt;
-  final Value<InspectionStatus> status;
+  final Value<String> status;
   final Value<DateTime> lastModifiedAt;
   final Value<int> version;
   final Value<bool> synced;
@@ -1340,7 +1346,7 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
     required String openedByTechnicianUid,
     required DateTime openedAt,
     this.closedAt = const Value.absent(),
-    required InspectionStatus status,
+    required String status,
     required DateTime lastModifiedAt,
     this.version = const Value.absent(),
     this.synced = const Value.absent(),
@@ -1393,14 +1399,14 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
     Value<String>? id,
     Value<String?>? serverId,
     Value<DateTime?>? deletedAt,
-    Value<SyncStatus>? syncStatus,
+    Value<String>? syncStatus,
     Value<DateTime?>? lastSyncedAt,
     Value<String?>? syncError,
     Value<String>? aircraftTailNumber,
     Value<String>? openedByTechnicianUid,
     Value<DateTime>? openedAt,
     Value<DateTime?>? closedAt,
-    Value<InspectionStatus>? status,
+    Value<String>? status,
     Value<DateTime>? lastModifiedAt,
     Value<int>? version,
     Value<bool>? synced,
@@ -1439,9 +1445,7 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (syncStatus.present) {
-      map['sync_status'] = Variable<String>(
-        $InspectionsTable.$convertersyncStatus.toSql(syncStatus.value),
-      );
+      map['sync_status'] = Variable<String>(syncStatus.value);
     }
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
@@ -1464,9 +1468,7 @@ class InspectionsCompanion extends UpdateCompanion<Inspection> {
       map['closed_at'] = Variable<DateTime>(closedAt.value);
     }
     if (status.present) {
-      map['status'] = Variable<String>(
-        $InspectionsTable.$converterstatus.toSql(status.value),
-      );
+      map['status'] = Variable<String>(status.value);
     }
     if (lastModifiedAt.present) {
       map['last_modified_at'] = Variable<DateTime>(lastModifiedAt.value);
@@ -1553,16 +1555,18 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
   @override
-  late final GeneratedColumnWithTypeConverter<SyncStatus, String> syncStatus =
-      GeneratedColumn<String>(
-        'sync_status',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant('dirty'),
-      ).withConverter<SyncStatus>($TasksTable.$convertersyncStatus);
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('dirty'),
+  );
   static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
     'lastSyncedAt',
   );
@@ -1614,15 +1618,15 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _resultMeta = const VerificationMeta('result');
   @override
-  late final GeneratedColumnWithTypeConverter<TaskResult?, String> result =
-      GeneratedColumn<String>(
-        'result',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-      ).withConverter<TaskResult?>($TasksTable.$converterresult);
+  late final GeneratedColumn<String> result = GeneratedColumn<String>(
+    'result',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -1755,6 +1759,12 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
       );
     }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
     if (data.containsKey('last_synced_at')) {
       context.handle(
         _lastSyncedAtMeta,
@@ -1791,6 +1801,12 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
           data['description']!,
           _descriptionMeta,
         ),
+      );
+    }
+    if (data.containsKey('result')) {
+      context.handle(
+        _resultMeta,
+        result.isAcceptableOrUnknown(data['result']!, _resultMeta),
       );
     }
     if (data.containsKey('notes')) {
@@ -1862,12 +1878,10 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
       ),
-      syncStatus: $TasksTable.$convertersyncStatus.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}sync_status'],
-        )!,
-      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -1888,11 +1902,9 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         DriftSqlType.string,
         data['${effectivePrefix}description'],
       ),
-      result: $TasksTable.$converterresult.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}result'],
-        ),
+      result: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}result'],
       ),
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -1925,11 +1937,6 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   $TasksTable createAlias(String alias) {
     return $TasksTable(attachedDatabase, alias);
   }
-
-  static TypeConverter<SyncStatus, String> $convertersyncStatus =
-      const SyncStatusConverter();
-  static TypeConverter<TaskResult?, String?> $converterresult =
-      const TaskResultConverter();
 }
 
 class Task extends DataClass implements Insertable<Task> {
@@ -1937,13 +1944,17 @@ class Task extends DataClass implements Insertable<Task> {
   final String inspectionId;
   final String? serverId;
   final DateTime? deletedAt;
-  final SyncStatus syncStatus;
+
+  /// e.g. 'dirty', 'clean', 'error'
+  final String syncStatus;
   final DateTime? lastSyncedAt;
   final String? syncError;
   final String? code;
   final String title;
   final String? description;
-  final TaskResult? result;
+
+  /// e.g. 'pass', 'fail', 'na' (string-only)
+  final String? result;
   final String? notes;
   final bool completed;
   final DateTime? completedAt;
@@ -1980,11 +1991,7 @@ class Task extends DataClass implements Insertable<Task> {
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    {
-      map['sync_status'] = Variable<String>(
-        $TasksTable.$convertersyncStatus.toSql(syncStatus),
-      );
-    }
+    map['sync_status'] = Variable<String>(syncStatus);
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -1999,9 +2006,7 @@ class Task extends DataClass implements Insertable<Task> {
       map['description'] = Variable<String>(description);
     }
     if (!nullToAbsent || result != null) {
-      map['result'] = Variable<String>(
-        $TasksTable.$converterresult.toSql(result),
-      );
+      map['result'] = Variable<String>(result);
     }
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
@@ -2064,13 +2069,13 @@ class Task extends DataClass implements Insertable<Task> {
       inspectionId: serializer.fromJson<String>(json['inspectionId']),
       serverId: serializer.fromJson<String?>(json['serverId']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      syncStatus: serializer.fromJson<SyncStatus>(json['syncStatus']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       syncError: serializer.fromJson<String?>(json['syncError']),
       code: serializer.fromJson<String?>(json['code']),
       title: serializer.fromJson<String>(json['title']),
       description: serializer.fromJson<String?>(json['description']),
-      result: serializer.fromJson<TaskResult?>(json['result']),
+      result: serializer.fromJson<String?>(json['result']),
       notes: serializer.fromJson<String?>(json['notes']),
       completed: serializer.fromJson<bool>(json['completed']),
       completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
@@ -2087,13 +2092,13 @@ class Task extends DataClass implements Insertable<Task> {
       'inspectionId': serializer.toJson<String>(inspectionId),
       'serverId': serializer.toJson<String?>(serverId),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'syncStatus': serializer.toJson<SyncStatus>(syncStatus),
+      'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'syncError': serializer.toJson<String?>(syncError),
       'code': serializer.toJson<String?>(code),
       'title': serializer.toJson<String>(title),
       'description': serializer.toJson<String?>(description),
-      'result': serializer.toJson<TaskResult?>(result),
+      'result': serializer.toJson<String?>(result),
       'notes': serializer.toJson<String?>(notes),
       'completed': serializer.toJson<bool>(completed),
       'completedAt': serializer.toJson<DateTime?>(completedAt),
@@ -2108,13 +2113,13 @@ class Task extends DataClass implements Insertable<Task> {
     String? inspectionId,
     Value<String?> serverId = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    SyncStatus? syncStatus,
+    String? syncStatus,
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     Value<String?> syncError = const Value.absent(),
     Value<String?> code = const Value.absent(),
     String? title,
     Value<String?> description = const Value.absent(),
-    Value<TaskResult?> result = const Value.absent(),
+    Value<String?> result = const Value.absent(),
     Value<String?> notes = const Value.absent(),
     bool? completed,
     Value<DateTime?> completedAt = const Value.absent(),
@@ -2246,13 +2251,13 @@ class TasksCompanion extends UpdateCompanion<Task> {
   final Value<String> inspectionId;
   final Value<String?> serverId;
   final Value<DateTime?> deletedAt;
-  final Value<SyncStatus> syncStatus;
+  final Value<String> syncStatus;
   final Value<DateTime?> lastSyncedAt;
   final Value<String?> syncError;
   final Value<String?> code;
   final Value<String> title;
   final Value<String?> description;
-  final Value<TaskResult?> result;
+  final Value<String?> result;
   final Value<String?> notes;
   final Value<bool> completed;
   final Value<DateTime?> completedAt;
@@ -2350,13 +2355,13 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Value<String>? inspectionId,
     Value<String?>? serverId,
     Value<DateTime?>? deletedAt,
-    Value<SyncStatus>? syncStatus,
+    Value<String>? syncStatus,
     Value<DateTime?>? lastSyncedAt,
     Value<String?>? syncError,
     Value<String?>? code,
     Value<String>? title,
     Value<String?>? description,
-    Value<TaskResult?>? result,
+    Value<String?>? result,
     Value<String?>? notes,
     Value<bool>? completed,
     Value<DateTime?>? completedAt,
@@ -2403,9 +2408,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (syncStatus.present) {
-      map['sync_status'] = Variable<String>(
-        $TasksTable.$convertersyncStatus.toSql(syncStatus.value),
-      );
+      map['sync_status'] = Variable<String>(syncStatus.value);
     }
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
@@ -2423,9 +2426,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
       map['description'] = Variable<String>(description.value);
     }
     if (result.present) {
-      map['result'] = Variable<String>(
-        $TasksTable.$converterresult.toSql(result.value),
-      );
+      map['result'] = Variable<String>(result.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -2514,16 +2515,18 @@ class $AuditEventsTable extends AuditEvents
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
   @override
-  late final GeneratedColumnWithTypeConverter<SyncStatus, String> syncStatus =
-      GeneratedColumn<String>(
-        'sync_status',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant('dirty'),
-      ).withConverter<SyncStatus>($AuditEventsTable.$convertersyncStatus);
+  late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
+    'sync_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('dirty'),
+  );
   static const VerificationMeta _lastSyncedAtMeta = const VerificationMeta(
     'lastSyncedAt',
   );
@@ -2668,6 +2671,12 @@ class $AuditEventsTable extends AuditEvents
         deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
       );
     }
+    if (data.containsKey('sync_status')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
+      );
+    }
     if (data.containsKey('last_synced_at')) {
       context.handle(
         _lastSyncedAtMeta,
@@ -2762,12 +2771,10 @@ class $AuditEventsTable extends AuditEvents
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
       ),
-      syncStatus: $AuditEventsTable.$convertersyncStatus.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}sync_status'],
-        )!,
-      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_status'],
+      )!,
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -2811,16 +2818,15 @@ class $AuditEventsTable extends AuditEvents
   $AuditEventsTable createAlias(String alias) {
     return $AuditEventsTable(attachedDatabase, alias);
   }
-
-  static TypeConverter<SyncStatus, String> $convertersyncStatus =
-      const SyncStatusConverter();
 }
 
 class AuditEvent extends DataClass implements Insertable<AuditEvent> {
   final String id;
   final String? serverId;
   final DateTime? deletedAt;
-  final SyncStatus syncStatus;
+
+  /// e.g. 'dirty', 'clean', 'error'
+  final String syncStatus;
   final DateTime? lastSyncedAt;
   final String? syncError;
   final String entityType;
@@ -2855,11 +2861,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    {
-      map['sync_status'] = Variable<String>(
-        $AuditEventsTable.$convertersyncStatus.toSql(syncStatus),
-      );
-    }
+    map['sync_status'] = Variable<String>(syncStatus);
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -2915,7 +2917,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       id: serializer.fromJson<String>(json['id']),
       serverId: serializer.fromJson<String?>(json['serverId']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      syncStatus: serializer.fromJson<SyncStatus>(json['syncStatus']),
+      syncStatus: serializer.fromJson<String>(json['syncStatus']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       syncError: serializer.fromJson<String?>(json['syncError']),
       entityType: serializer.fromJson<String>(json['entityType']),
@@ -2934,7 +2936,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
       'id': serializer.toJson<String>(id),
       'serverId': serializer.toJson<String?>(serverId),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'syncStatus': serializer.toJson<SyncStatus>(syncStatus),
+      'syncStatus': serializer.toJson<String>(syncStatus),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'syncError': serializer.toJson<String?>(syncError),
       'entityType': serializer.toJson<String>(entityType),
@@ -2951,7 +2953,7 @@ class AuditEvent extends DataClass implements Insertable<AuditEvent> {
     String? id,
     Value<String?> serverId = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    SyncStatus? syncStatus,
+    String? syncStatus,
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     Value<String?> syncError = const Value.absent(),
     String? entityType,
@@ -3065,7 +3067,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
   final Value<String> id;
   final Value<String?> serverId;
   final Value<DateTime?> deletedAt;
-  final Value<SyncStatus> syncStatus;
+  final Value<String> syncStatus;
   final Value<DateTime?> lastSyncedAt;
   final Value<String?> syncError;
   final Value<String> entityType;
@@ -3151,7 +3153,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
     Value<String>? id,
     Value<String?>? serverId,
     Value<DateTime?>? deletedAt,
-    Value<SyncStatus>? syncStatus,
+    Value<String>? syncStatus,
     Value<DateTime?>? lastSyncedAt,
     Value<String?>? syncError,
     Value<String>? entityType,
@@ -3194,9 +3196,7 @@ class AuditEventsCompanion extends UpdateCompanion<AuditEvent> {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
     if (syncStatus.present) {
-      map['sync_status'] = Variable<String>(
-        $AuditEventsTable.$convertersyncStatus.toSql(syncStatus.value),
-      );
+      map['sync_status'] = Variable<String>(syncStatus.value);
     }
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
@@ -3280,6 +3280,7 @@ class $OutboxItemsTable extends OutboxItems
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   static const VerificationMeta _entityTypeMeta = const VerificationMeta(
     'entityType',
@@ -3291,6 +3292,7 @@ class $OutboxItemsTable extends OutboxItems
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   static const VerificationMeta _entityLocalIdMeta = const VerificationMeta(
     'entityLocalId',
@@ -3302,17 +3304,20 @@ class $OutboxItemsTable extends OutboxItems
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _operationMeta = const VerificationMeta(
+    'operation',
   );
   @override
-  late final GeneratedColumnWithTypeConverter<OutboxOp, String> operation =
-      GeneratedColumn<String>(
-        'operation',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant('update'),
-      ).withConverter<OutboxOp>($OutboxItemsTable.$converteroperation);
+  late final GeneratedColumn<String> operation = GeneratedColumn<String>(
+    'operation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('update'),
+  );
   static const VerificationMeta _idempotencyKeyMeta = const VerificationMeta(
     'idempotencyKey',
   );
@@ -3334,6 +3339,7 @@ class $OutboxItemsTable extends OutboxItems
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
@@ -3346,16 +3352,16 @@ class $OutboxItemsTable extends OutboxItems
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumnWithTypeConverter<OutboxStatus, String> status =
-      GeneratedColumn<String>(
-        'status',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultValue: const Constant('pending'),
-      ).withConverter<OutboxStatus>($OutboxItemsTable.$converterstatus);
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
   static const VerificationMeta _retryCountMeta = const VerificationMeta(
     'retryCount',
   );
@@ -3448,6 +3454,12 @@ class $OutboxItemsTable extends OutboxItems
     } else if (isInserting) {
       context.missing(_entityLocalIdMeta);
     }
+    if (data.containsKey('operation')) {
+      context.handle(
+        _operationMeta,
+        operation.isAcceptableOrUnknown(data['operation']!, _operationMeta),
+      );
+    }
     if (data.containsKey('idempotency_key')) {
       context.handle(
         _idempotencyKeyMeta,
@@ -3475,6 +3487,12 @@ class $OutboxItemsTable extends OutboxItems
       );
     } else if (isInserting) {
       context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
     }
     if (data.containsKey('retry_count')) {
       context.handle(
@@ -3522,12 +3540,10 @@ class $OutboxItemsTable extends OutboxItems
         DriftSqlType.string,
         data['${effectivePrefix}entity_local_id'],
       )!,
-      operation: $OutboxItemsTable.$converteroperation.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}operation'],
-        )!,
-      ),
+      operation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}operation'],
+      )!,
       idempotencyKey: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}idempotency_key'],
@@ -3540,12 +3556,10 @@ class $OutboxItemsTable extends OutboxItems
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
-      status: $OutboxItemsTable.$converterstatus.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}status'],
-        )!,
-      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
       retryCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}retry_count'],
@@ -3565,11 +3579,6 @@ class $OutboxItemsTable extends OutboxItems
   $OutboxItemsTable createAlias(String alias) {
     return $OutboxItemsTable(attachedDatabase, alias);
   }
-
-  static TypeConverter<OutboxOp, String> $converteroperation =
-      const OutboxOpConverter();
-  static TypeConverter<OutboxStatus, String> $converterstatus =
-      const OutboxStatusConverter();
 }
 
 class OutboxItem extends DataClass implements Insertable<OutboxItem> {
@@ -3577,11 +3586,11 @@ class OutboxItem extends DataClass implements Insertable<OutboxItem> {
   final String type;
   final String entityType;
   final String entityLocalId;
-  final OutboxOp operation;
+  final String operation;
   final String? idempotencyKey;
   final String payloadJson;
   final DateTime createdAt;
-  final OutboxStatus status;
+  final String status;
   final int retryCount;
   final DateTime? lastAttemptAt;
   final String? lastError;
@@ -3606,21 +3615,13 @@ class OutboxItem extends DataClass implements Insertable<OutboxItem> {
     map['type'] = Variable<String>(type);
     map['entity_type'] = Variable<String>(entityType);
     map['entity_local_id'] = Variable<String>(entityLocalId);
-    {
-      map['operation'] = Variable<String>(
-        $OutboxItemsTable.$converteroperation.toSql(operation),
-      );
-    }
+    map['operation'] = Variable<String>(operation);
     if (!nullToAbsent || idempotencyKey != null) {
       map['idempotency_key'] = Variable<String>(idempotencyKey);
     }
     map['payload_json'] = Variable<String>(payloadJson);
     map['created_at'] = Variable<DateTime>(createdAt);
-    {
-      map['status'] = Variable<String>(
-        $OutboxItemsTable.$converterstatus.toSql(status),
-      );
-    }
+    map['status'] = Variable<String>(status);
     map['retry_count'] = Variable<int>(retryCount);
     if (!nullToAbsent || lastAttemptAt != null) {
       map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt);
@@ -3664,11 +3665,11 @@ class OutboxItem extends DataClass implements Insertable<OutboxItem> {
       type: serializer.fromJson<String>(json['type']),
       entityType: serializer.fromJson<String>(json['entityType']),
       entityLocalId: serializer.fromJson<String>(json['entityLocalId']),
-      operation: serializer.fromJson<OutboxOp>(json['operation']),
+      operation: serializer.fromJson<String>(json['operation']),
       idempotencyKey: serializer.fromJson<String?>(json['idempotencyKey']),
       payloadJson: serializer.fromJson<String>(json['payloadJson']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      status: serializer.fromJson<OutboxStatus>(json['status']),
+      status: serializer.fromJson<String>(json['status']),
       retryCount: serializer.fromJson<int>(json['retryCount']),
       lastAttemptAt: serializer.fromJson<DateTime?>(json['lastAttemptAt']),
       lastError: serializer.fromJson<String?>(json['lastError']),
@@ -3682,11 +3683,11 @@ class OutboxItem extends DataClass implements Insertable<OutboxItem> {
       'type': serializer.toJson<String>(type),
       'entityType': serializer.toJson<String>(entityType),
       'entityLocalId': serializer.toJson<String>(entityLocalId),
-      'operation': serializer.toJson<OutboxOp>(operation),
+      'operation': serializer.toJson<String>(operation),
       'idempotencyKey': serializer.toJson<String?>(idempotencyKey),
       'payloadJson': serializer.toJson<String>(payloadJson),
       'createdAt': serializer.toJson<DateTime>(createdAt),
-      'status': serializer.toJson<OutboxStatus>(status),
+      'status': serializer.toJson<String>(status),
       'retryCount': serializer.toJson<int>(retryCount),
       'lastAttemptAt': serializer.toJson<DateTime?>(lastAttemptAt),
       'lastError': serializer.toJson<String?>(lastError),
@@ -3698,11 +3699,11 @@ class OutboxItem extends DataClass implements Insertable<OutboxItem> {
     String? type,
     String? entityType,
     String? entityLocalId,
-    OutboxOp? operation,
+    String? operation,
     Value<String?> idempotencyKey = const Value.absent(),
     String? payloadJson,
     DateTime? createdAt,
-    OutboxStatus? status,
+    String? status,
     int? retryCount,
     Value<DateTime?> lastAttemptAt = const Value.absent(),
     Value<String?> lastError = const Value.absent(),
@@ -3810,11 +3811,11 @@ class OutboxItemsCompanion extends UpdateCompanion<OutboxItem> {
   final Value<String> type;
   final Value<String> entityType;
   final Value<String> entityLocalId;
-  final Value<OutboxOp> operation;
+  final Value<String> operation;
   final Value<String?> idempotencyKey;
   final Value<String> payloadJson;
   final Value<DateTime> createdAt;
-  final Value<OutboxStatus> status;
+  final Value<String> status;
   final Value<int> retryCount;
   final Value<DateTime?> lastAttemptAt;
   final Value<String?> lastError;
@@ -3885,11 +3886,11 @@ class OutboxItemsCompanion extends UpdateCompanion<OutboxItem> {
     Value<String>? type,
     Value<String>? entityType,
     Value<String>? entityLocalId,
-    Value<OutboxOp>? operation,
+    Value<String>? operation,
     Value<String?>? idempotencyKey,
     Value<String>? payloadJson,
     Value<DateTime>? createdAt,
-    Value<OutboxStatus>? status,
+    Value<String>? status,
     Value<int>? retryCount,
     Value<DateTime?>? lastAttemptAt,
     Value<String?>? lastError,
@@ -3926,9 +3927,7 @@ class OutboxItemsCompanion extends UpdateCompanion<OutboxItem> {
       map['entity_local_id'] = Variable<String>(entityLocalId.value);
     }
     if (operation.present) {
-      map['operation'] = Variable<String>(
-        $OutboxItemsTable.$converteroperation.toSql(operation.value),
-      );
+      map['operation'] = Variable<String>(operation.value);
     }
     if (idempotencyKey.present) {
       map['idempotency_key'] = Variable<String>(idempotencyKey.value);
@@ -3940,9 +3939,7 @@ class OutboxItemsCompanion extends UpdateCompanion<OutboxItem> {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (status.present) {
-      map['status'] = Variable<String>(
-        $OutboxItemsTable.$converterstatus.toSql(status.value),
-      );
+      map['status'] = Variable<String>(status.value);
     }
     if (retryCount.present) {
       map['retry_count'] = Variable<int>(retryCount.value);
@@ -4808,6 +4805,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SyncStateTable syncState = $SyncStateTable(this);
   late final $LocalCacheTable localCache = $LocalCacheTable(this);
   late final InspectionDao inspectionDao = InspectionDao(this as AppDatabase);
+  late final TaskDao taskDao = TaskDao(this as AppDatabase);
+  late final OutboxDao outboxDao = OutboxDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5218,14 +5217,14 @@ typedef $$InspectionsTableCreateCompanionBuilder =
       required String id,
       Value<String?> serverId,
       Value<DateTime?> deletedAt,
-      Value<SyncStatus> syncStatus,
+      Value<String> syncStatus,
       Value<DateTime?> lastSyncedAt,
       Value<String?> syncError,
       required String aircraftTailNumber,
       required String openedByTechnicianUid,
       required DateTime openedAt,
       Value<DateTime?> closedAt,
-      required InspectionStatus status,
+      required String status,
       required DateTime lastModifiedAt,
       Value<int> version,
       Value<bool> synced,
@@ -5236,14 +5235,14 @@ typedef $$InspectionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String?> serverId,
       Value<DateTime?> deletedAt,
-      Value<SyncStatus> syncStatus,
+      Value<String> syncStatus,
       Value<DateTime?> lastSyncedAt,
       Value<String?> syncError,
       Value<String> aircraftTailNumber,
       Value<String> openedByTechnicianUid,
       Value<DateTime> openedAt,
       Value<DateTime?> closedAt,
-      Value<InspectionStatus> status,
+      Value<String> status,
       Value<DateTime> lastModifiedAt,
       Value<int> version,
       Value<bool> synced,
@@ -5274,10 +5273,9 @@ class $$InspectionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<SyncStatus, SyncStatus, String>
-  get syncStatus => $composableBuilder(
+  ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
@@ -5310,10 +5308,9 @@ class $$InspectionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<InspectionStatus, InspectionStatus, String>
-  get status => $composableBuilder(
+  ColumnFilters<String> get status => $composableBuilder(
     column: $table.status,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<DateTime> get lastModifiedAt => $composableBuilder(
@@ -5430,11 +5427,10 @@ class $$InspectionsTableAnnotationComposer
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<SyncStatus, String> get syncStatus =>
-      $composableBuilder(
-        column: $table.syncStatus,
-        builder: (column) => column,
-      );
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
     column: $table.lastSyncedAt,
@@ -5460,7 +5456,7 @@ class $$InspectionsTableAnnotationComposer
   GeneratedColumn<DateTime> get closedAt =>
       $composableBuilder(column: $table.closedAt, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<InspectionStatus, String> get status =>
+  GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
   GeneratedColumn<DateTime> get lastModifiedAt => $composableBuilder(
@@ -5509,14 +5505,14 @@ class $$InspectionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
                 Value<String> aircraftTailNumber = const Value.absent(),
                 Value<String> openedByTechnicianUid = const Value.absent(),
                 Value<DateTime> openedAt = const Value.absent(),
                 Value<DateTime?> closedAt = const Value.absent(),
-                Value<InspectionStatus> status = const Value.absent(),
+                Value<String> status = const Value.absent(),
                 Value<DateTime> lastModifiedAt = const Value.absent(),
                 Value<int> version = const Value.absent(),
                 Value<bool> synced = const Value.absent(),
@@ -5543,14 +5539,14 @@ class $$InspectionsTableTableManager
                 required String id,
                 Value<String?> serverId = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
                 required String aircraftTailNumber,
                 required String openedByTechnicianUid,
                 required DateTime openedAt,
                 Value<DateTime?> closedAt = const Value.absent(),
-                required InspectionStatus status,
+                required String status,
                 required DateTime lastModifiedAt,
                 Value<int> version = const Value.absent(),
                 Value<bool> synced = const Value.absent(),
@@ -5603,13 +5599,13 @@ typedef $$TasksTableCreateCompanionBuilder =
       required String inspectionId,
       Value<String?> serverId,
       Value<DateTime?> deletedAt,
-      Value<SyncStatus> syncStatus,
+      Value<String> syncStatus,
       Value<DateTime?> lastSyncedAt,
       Value<String?> syncError,
       Value<String?> code,
       required String title,
       Value<String?> description,
-      Value<TaskResult?> result,
+      Value<String?> result,
       Value<String?> notes,
       Value<bool> completed,
       Value<DateTime?> completedAt,
@@ -5624,13 +5620,13 @@ typedef $$TasksTableUpdateCompanionBuilder =
       Value<String> inspectionId,
       Value<String?> serverId,
       Value<DateTime?> deletedAt,
-      Value<SyncStatus> syncStatus,
+      Value<String> syncStatus,
       Value<DateTime?> lastSyncedAt,
       Value<String?> syncError,
       Value<String?> code,
       Value<String> title,
       Value<String?> description,
-      Value<TaskResult?> result,
+      Value<String?> result,
       Value<String?> notes,
       Value<bool> completed,
       Value<DateTime?> completedAt,
@@ -5668,10 +5664,9 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<SyncStatus, SyncStatus, String>
-  get syncStatus => $composableBuilder(
+  ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
@@ -5699,11 +5694,10 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<TaskResult?, TaskResult, String> get result =>
-      $composableBuilder(
-        column: $table.result,
-        builder: (column) => ColumnWithTypeConverterFilters(column),
-      );
+  ColumnFilters<String> get result => $composableBuilder(
+    column: $table.result,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
@@ -5854,11 +5848,10 @@ class $$TasksTableAnnotationComposer
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<SyncStatus, String> get syncStatus =>
-      $composableBuilder(
-        column: $table.syncStatus,
-        builder: (column) => column,
-      );
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
     column: $table.lastSyncedAt,
@@ -5879,7 +5872,7 @@ class $$TasksTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumnWithTypeConverter<TaskResult?, String> get result =>
+  GeneratedColumn<String> get result =>
       $composableBuilder(column: $table.result, builder: (column) => column);
 
   GeneratedColumn<String> get notes =>
@@ -5937,13 +5930,13 @@ class $$TasksTableTableManager
                 Value<String> inspectionId = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
                 Value<String?> code = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String?> description = const Value.absent(),
-                Value<TaskResult?> result = const Value.absent(),
+                Value<String?> result = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<bool> completed = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
@@ -5977,13 +5970,13 @@ class $$TasksTableTableManager
                 required String inspectionId,
                 Value<String?> serverId = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
                 Value<String?> code = const Value.absent(),
                 required String title,
                 Value<String?> description = const Value.absent(),
-                Value<TaskResult?> result = const Value.absent(),
+                Value<String?> result = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<bool> completed = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
@@ -6038,7 +6031,7 @@ typedef $$AuditEventsTableCreateCompanionBuilder =
       required String id,
       Value<String?> serverId,
       Value<DateTime?> deletedAt,
-      Value<SyncStatus> syncStatus,
+      Value<String> syncStatus,
       Value<DateTime?> lastSyncedAt,
       Value<String?> syncError,
       required String entityType,
@@ -6055,7 +6048,7 @@ typedef $$AuditEventsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String?> serverId,
       Value<DateTime?> deletedAt,
-      Value<SyncStatus> syncStatus,
+      Value<String> syncStatus,
       Value<DateTime?> lastSyncedAt,
       Value<String?> syncError,
       Value<String> entityType,
@@ -6092,10 +6085,9 @@ class $$AuditEventsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<SyncStatus, SyncStatus, String>
-  get syncStatus => $composableBuilder(
+  ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
@@ -6237,11 +6229,10 @@ class $$AuditEventsTableAnnotationComposer
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<SyncStatus, String> get syncStatus =>
-      $composableBuilder(
-        column: $table.syncStatus,
-        builder: (column) => column,
-      );
+  GeneratedColumn<String> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
     column: $table.lastSyncedAt,
@@ -6315,7 +6306,7 @@ class $$AuditEventsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String?> serverId = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
                 Value<String> entityType = const Value.absent(),
@@ -6347,7 +6338,7 @@ class $$AuditEventsTableTableManager
                 required String id,
                 Value<String?> serverId = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<SyncStatus> syncStatus = const Value.absent(),
+                Value<String> syncStatus = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String?> syncError = const Value.absent(),
                 required String entityType,
@@ -6405,11 +6396,11 @@ typedef $$OutboxItemsTableCreateCompanionBuilder =
       required String type,
       required String entityType,
       required String entityLocalId,
-      Value<OutboxOp> operation,
+      Value<String> operation,
       Value<String?> idempotencyKey,
       required String payloadJson,
       required DateTime createdAt,
-      Value<OutboxStatus> status,
+      Value<String> status,
       Value<int> retryCount,
       Value<DateTime?> lastAttemptAt,
       Value<String?> lastError,
@@ -6420,11 +6411,11 @@ typedef $$OutboxItemsTableUpdateCompanionBuilder =
       Value<String> type,
       Value<String> entityType,
       Value<String> entityLocalId,
-      Value<OutboxOp> operation,
+      Value<String> operation,
       Value<String?> idempotencyKey,
       Value<String> payloadJson,
       Value<DateTime> createdAt,
-      Value<OutboxStatus> status,
+      Value<String> status,
       Value<int> retryCount,
       Value<DateTime?> lastAttemptAt,
       Value<String?> lastError,
@@ -6459,11 +6450,10 @@ class $$OutboxItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<OutboxOp, OutboxOp, String> get operation =>
-      $composableBuilder(
-        column: $table.operation,
-        builder: (column) => ColumnWithTypeConverterFilters(column),
-      );
+  ColumnFilters<String> get operation => $composableBuilder(
+    column: $table.operation,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get idempotencyKey => $composableBuilder(
     column: $table.idempotencyKey,
@@ -6480,10 +6470,9 @@ class $$OutboxItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<OutboxStatus, OutboxStatus, String>
-  get status => $composableBuilder(
+  ColumnFilters<String> get status => $composableBuilder(
     column: $table.status,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
+    builder: (column) => ColumnFilters(column),
   );
 
   ColumnFilters<int> get retryCount => $composableBuilder(
@@ -6597,7 +6586,7 @@ class $$OutboxItemsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumnWithTypeConverter<OutboxOp, String> get operation =>
+  GeneratedColumn<String> get operation =>
       $composableBuilder(column: $table.operation, builder: (column) => column);
 
   GeneratedColumn<String> get idempotencyKey => $composableBuilder(
@@ -6613,7 +6602,7 @@ class $$OutboxItemsTableAnnotationComposer
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<OutboxStatus, String> get status =>
+  GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
   GeneratedColumn<int> get retryCount => $composableBuilder(
@@ -6665,11 +6654,11 @@ class $$OutboxItemsTableTableManager
                 Value<String> type = const Value.absent(),
                 Value<String> entityType = const Value.absent(),
                 Value<String> entityLocalId = const Value.absent(),
-                Value<OutboxOp> operation = const Value.absent(),
+                Value<String> operation = const Value.absent(),
                 Value<String?> idempotencyKey = const Value.absent(),
                 Value<String> payloadJson = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
-                Value<OutboxStatus> status = const Value.absent(),
+                Value<String> status = const Value.absent(),
                 Value<int> retryCount = const Value.absent(),
                 Value<DateTime?> lastAttemptAt = const Value.absent(),
                 Value<String?> lastError = const Value.absent(),
@@ -6693,11 +6682,11 @@ class $$OutboxItemsTableTableManager
                 required String type,
                 required String entityType,
                 required String entityLocalId,
-                Value<OutboxOp> operation = const Value.absent(),
+                Value<String> operation = const Value.absent(),
                 Value<String?> idempotencyKey = const Value.absent(),
                 required String payloadJson,
                 required DateTime createdAt,
-                Value<OutboxStatus> status = const Value.absent(),
+                Value<String> status = const Value.absent(),
                 Value<int> retryCount = const Value.absent(),
                 Value<DateTime?> lastAttemptAt = const Value.absent(),
                 Value<String?> lastError = const Value.absent(),
