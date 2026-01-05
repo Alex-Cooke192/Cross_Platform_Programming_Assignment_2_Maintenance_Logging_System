@@ -34,25 +34,25 @@ class OutstandingInspectionDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Inspection Details')),
+
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: canStart
+            ? onStartInspection
+            : () => _showLimitDialog(context, inProgressCount),
+        icon: const Icon(Icons.play_arrow),
+        label: const Text('Start inspection'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _InspectionHeaderCard(inspection: inspection),
-
-            // Start Inspection button
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                icon: const Icon(Icons.play_arrow),
-                label: const Text('Start inspection'),
-                onPressed: canStart
-                    ? onStartInspection
-                    : () => _showLimitDialog(context, inProgressCount),
-              ),
-            ),
 
             const SizedBox(height: 16),
 
@@ -64,10 +64,13 @@ class OutstandingInspectionDetailsScreen extends StatelessWidget {
 
             Expanded(
               child: sortedTasks.isEmpty
-                  ? const Center(child: Text('No tasks found for this inspection.'))
+                  ? const Center(
+                      child: Text('No tasks found for this inspection.'),
+                    )
                   : ListView.separated(
                       itemCount: sortedTasks.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         final task = sortedTasks[index];
                         return _TaskTile(
@@ -76,7 +79,8 @@ class OutstandingInspectionDetailsScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => OutstandingTaskDetailsScreen(task: task),
+                                builder: (_) =>
+                                    OutstandingTaskDetailsScreen(task: task),
                               ),
                             );
                           },
@@ -130,14 +134,19 @@ class _InspectionHeaderCard extends StatelessWidget {
           children: [
             Text(
               inspection.aircraftTailNumber,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Text('Status: ${inspection.statusLabel}'),
             const SizedBox(height: 4),
             Text('Opened by: ${inspection.openedByTechnicianUid}'),
             const SizedBox(height: 4),
-            Text('Opened: ${inspection.openedAt?.toLocal()}'),
+            Text(
+              'Opened: ${inspection.openedAt?.toLocal() ?? '—'}',
+            ),
             const SizedBox(height: 4),
             Text(closedText),
           ],
@@ -159,22 +168,28 @@ class _TaskTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subtitleParts = <String>[
-      if (task.code != null && task.code!.trim().isNotEmpty) task.code!.trim(),
+      if (task.code != null && task.code!.trim().isNotEmpty)
+        task.code!.trim(),
       if (task.resultLabel != null) 'Result: ${task.resultLabel}',
-      if (task.notes != null && task.notes!.trim().isNotEmpty) 'Notes added',
+      if (task.notes != null && task.notes!.trim().isNotEmpty)
+        'Notes added',
     ];
 
     return ListTile(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       tileColor: Theme.of(context).colorScheme.surface,
-      leading: Icon(task.completed ? Icons.check_circle : Icons.radio_button_unchecked),
+      leading: Icon(
+        task.completed
+            ? Icons.check_circle
+            : Icons.radio_button_unchecked,
+      ),
       title: Text(task.title),
-      subtitle: subtitleParts.isEmpty ? null : Text(subtitleParts.join(' • ')),
+      subtitle:
+          subtitleParts.isEmpty ? null : Text(subtitleParts.join(' • ')),
       trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
     );
   }
 }
-
-
-
