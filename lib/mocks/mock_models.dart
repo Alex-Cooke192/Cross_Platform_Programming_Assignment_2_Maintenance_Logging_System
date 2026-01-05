@@ -1,4 +1,4 @@
-import '../ui_models.dart';
+import '../models/ui_models.dart';
 
 class MockData {
   static final inspections = <InspectionUi>[
@@ -7,14 +7,14 @@ class MockData {
       aircraftTailNumber: 'G-ABCD',
       openedByTechnicianUid: 'tech01',
       openedAt: DateTime.now().subtract(const Duration(hours: 3)),
-      statusLabel: 'In Progress',
+      statusLabel: 'Outstanding',
     ),
     InspectionUi(
       id: 'insp-2',
       aircraftTailNumber: 'G-EFGH',
       openedByTechnicianUid: 'tech02',
       openedAt: DateTime.now().subtract(const Duration(days: 1)),
-      statusLabel: 'Open',
+      statusLabel: 'Outstanding',
     ),
   ];
 
