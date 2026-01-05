@@ -16,6 +16,11 @@ class MockData {
       openedAt: DateTime.now().subtract(const Duration(days: 1)),
       statusLabel: 'Outstanding',
     ),
+    InspectionUi(id: 'insp-4',
+    aircraftTailNumber: 'G-FBZC', 
+    openedByTechnicianUid: 'tech-03', 
+    openedAt: DateTime.now(),
+    statusLabel: 'In Progress')
   ];
 
   static final tasks = <TaskUi>[
