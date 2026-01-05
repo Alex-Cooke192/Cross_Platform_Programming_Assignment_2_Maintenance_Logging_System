@@ -1,41 +1,41 @@
 import 'package:drift/drift.dart';
-import '../converters/sync_converters.dart';
-
-enum OutboxStatus { pending, sending, sent, failed }
-
-class OutboxStatusConverter extends TypeConverter<OutboxStatus, String> {
-  const OutboxStatusConverter();
-  @override
-  OutboxStatus fromSql(String fromDb) =>
-      OutboxStatus.values.firstWhere((e) => e.name == fromDb);
-  @override
-  String toSql(OutboxStatus value) => value.name;
-}
 
 class OutboxItems extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  // Existing meaning (you can keep using your current "type" for business events)
-  TextColumn get type => text()();         // TASK_COMPLETED, INSPECTION_CLOSED, etc.
-  TextColumn get entityType => text()();   // task, inspection, evidence
-  TextColumn get entityLocalId => text()();
+  // Business event info
+  // e.g. 'TASK_COMPLETED', 'INSPECTION_CLOSED', 'EVIDENCE_ADDED'
+  TextColumn get type => text().customConstraint('NOT NULL')();
 
-  // New: explicit sync operation (server upsert semantics)
+  // e.g. 'task', 'inspection', 'evidence'
+  TextColumn get entityType => text().named('entity_type').customConstraint('NOT NULL')();
+
+  // local id (string so you can use UUIDs)
+  TextColumn get entityLocalId => text().named('entity_local_id').customConstraint('NOT NULL')();
+
+  // e.g. 'create', 'update', 'delete' (string-only)
   TextColumn get operation => text()
-      .map(const OutboxOpConverter())
+      .named('operation')
       .withDefault(const Constant('update'))();
 
-  // New: idempotency key (helps later to avoid duplicate server writes)
-  TextColumn get idempotencyKey => text().nullable()();
+  // helps avoid duplicate server writes
+  TextColumn get idempotencyKey => text().named('idempotency_key').nullable()();
 
-  TextColumn get payloadJson => text()();
-  DateTimeColumn get createdAt => dateTime()();
+  TextColumn get payloadJson => text().named('payload_json').customConstraint('NOT NULL')();
 
+  DateTimeColumn get createdAt => dateTime().named('created_at')();
+
+  // e.g. 'pending', 'sending', 'sent', 'failed' (string-only)
   TextColumn get status => text()
-      .map(const OutboxStatusConverter())
+      .named('status')
       .withDefault(const Constant('pending'))();
 
-  IntColumn get retryCount => integer().withDefault(const Constant(0))();
-  DateTimeColumn get lastAttemptAt => dateTime().nullable()();
-  TextColumn get lastError => text().nullable()();
+  IntColumn get retryCount => integer()
+      .named('retry_count')
+      .withDefault(const Constant(0))();
+
+  DateTimeColumn get lastAttemptAt => dateTime().named('last_attempt_at').nullable()();
+
+  TextColumn get lastError => text().named('last_error').nullable()();
 }
+

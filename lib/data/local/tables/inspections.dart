@@ -1,40 +1,35 @@
 import 'package:drift/drift.dart';
-import '../converters/sync_converters.dart';
-
-enum InspectionStatus { open, inProgress, closed }
-
-class InspectionStatusConverter extends TypeConverter<InspectionStatus, String> {
-  const InspectionStatusConverter();
-  @override
-  InspectionStatus fromSql(String fromDb) =>
-      InspectionStatus.values.firstWhere((e) => e.name == fromDb);
-  @override
-  String toSql(InspectionStatus value) => value.name;
-}
 
 class Inspections extends Table {
   TextColumn get id => text()(); // UUID string
 
-  // New (sync-ready)
+  // Sync-ready metadata (string-only)
   TextColumn get serverId => text().nullable()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  /// e.g. 'dirty', 'clean', 'error' (if you still want this concept).
+  /// If you don’t, you can delete this column entirely.
   TextColumn get syncStatus => text()
-      .map(const SyncStatusConverter())
+      .named('sync_status')
       .withDefault(const Constant('dirty'))();
-  DateTimeColumn get lastSyncedAt => dateTime().nullable()();
-  TextColumn get syncError => text().nullable()();
 
-  // Existing
-  TextColumn get aircraftTailNumber => text()();
-  TextColumn get openedByTechnicianUid => text()();
+  DateTimeColumn get lastSyncedAt => dateTime().named('last_synced_at').nullable()();
+  TextColumn get syncError => text().named('sync_error').nullable()();
 
-  DateTimeColumn get openedAt => dateTime()();
-  DateTimeColumn get closedAt => dateTime().nullable()();
+  // Business fields
+  TextColumn get aircraftTailNumber => text().named('aircraft_tail_number')();
+  TextColumn get openedByTechnicianUid =>
+      text().named('opened_by_technician_uid')();
 
-  TextColumn get status =>
-      text().map(const InspectionStatusConverter())(); // open/inProgress/closed
+  DateTimeColumn get openedAt => dateTime().named('opened_at')();
+  DateTimeColumn get closedAt => dateTime().named('closed_at').nullable()();
 
-  DateTimeColumn get lastModifiedAt => dateTime()();
+  /// Workflow status for UI buckets (string-only).
+  /// Suggested values: 'outstanding', 'in_progress', 'completed_awaiting_sync'
+  /// (or if you prefer: 'open', 'in_progress', 'closed')
+  TextColumn get status => text().named('status')();
+
+  DateTimeColumn get lastModifiedAt => dateTime().named('last_modified_at')();
   IntColumn get version => integer().withDefault(const Constant(1))();
 
   // Legacy (keep for 1 migration, remove later if you want)

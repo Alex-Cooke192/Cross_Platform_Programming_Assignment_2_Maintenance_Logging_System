@@ -1,33 +1,36 @@
 import 'package:drift/drift.dart';
-import '../converters/sync_converters.dart';
 
 class AuditEvents extends Table {
   TextColumn get id => text()(); // UUID
 
-  // New (sync-ready)
-  TextColumn get serverId => text().nullable()();
-  DateTimeColumn get deletedAt => dateTime().nullable()();
+  // Sync metadata (string-only)
+  TextColumn get serverId => text().named('server_id').nullable()();
+  DateTimeColumn get deletedAt => dateTime().named('deleted_at').nullable()();
+
+  /// e.g. 'dirty', 'clean', 'error'
   TextColumn get syncStatus => text()
-      .map(const SyncStatusConverter())
+      .named('sync_status')
       .withDefault(const Constant('dirty'))();
-  DateTimeColumn get lastSyncedAt => dateTime().nullable()();
-  TextColumn get syncError => text().nullable()();
 
-  // Existing
-  TextColumn get entityType => text()(); // inspection/task/evidence/auth
-  TextColumn get entityId => text()();   // UUID string
+  DateTimeColumn get lastSyncedAt => dateTime().named('last_synced_at').nullable()();
+  TextColumn get syncError => text().named('sync_error').nullable()();
 
-  TextColumn get action => text()();     // created/updated/completed/closed/etc
-  TextColumn get technicianUid => text()();
+  // Business fields
+  TextColumn get entityType => text().named('entity_type')(); // inspection/task/evidence/auth
+  TextColumn get entityId => text().named('entity_id')();     // UUID string (local or server)
 
-  DateTimeColumn get occurredAt => dateTime()();
+  TextColumn get action => text().named('action')();          // created/updated/completed/closed/etc
+  TextColumn get technicianUid => text().named('technician_uid')();
 
-  TextColumn get metadataJson => text().nullable()();
+  DateTimeColumn get occurredAt => dateTime().named('occurred_at')();
 
-  // Legacy (keep for 1 migration, remove later if you want)
+  TextColumn get metadataJson => text().named('metadata_json').nullable()();
+
+  // Legacy
   BoolColumn get synced => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
 }
+
 
