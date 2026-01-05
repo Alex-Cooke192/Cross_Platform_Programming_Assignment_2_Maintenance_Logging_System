@@ -2,18 +2,36 @@ class InspectionUi {
   final String id;
   final String aircraftTailNumber;
   final String openedByTechnicianUid;
-  final DateTime openedAt;
-  final DateTime? closedAt;
-  final String statusLabel;
+  DateTime? openedAt;
+  DateTime? closedAt;
+  String statusLabel;
 
-  const InspectionUi({
+  InspectionUi({
     required this.id, 
     required this.aircraftTailNumber,
     required this.openedByTechnicianUid,
-    required this.openedAt,
-    required this.statusLabel,
+    this.openedAt,
+    required this.statusLabel, 
     this.closedAt,
   });
+
+  InspectionUi copyWith({
+    String? id,
+    String? aircraftTailNumber,
+    String? statusLabel,
+    String? openedByTechnicianUid,
+    DateTime? openedAt,
+    DateTime? closedAt,
+    }) {
+    return InspectionUi(
+      id: id ?? this.id,
+      aircraftTailNumber: aircraftTailNumber ?? this.aircraftTailNumber,
+      statusLabel: statusLabel ?? this.statusLabel,
+      openedByTechnicianUid: openedByTechnicianUid ?? this.openedByTechnicianUid,
+      openedAt: openedAt ?? this.openedAt,
+      closedAt: closedAt ?? this.closedAt,
+    );
+  }
 }
 
 class TaskUi {
