@@ -1,117 +1,88 @@
-// lib/data/repositories/task_repository.dart
-//
-// TaskRepository sits between UI and the local DB layer (TaskDao).
-// - Converts from Drift rows -> TaskUi
-// - Keeps DB concerns inside the DAO
+import 'package:drift/drift.dart';
 
-import 'package:maintenance_logging_system/models/ui_models.dart';
-import 'package:maintenance_logging_system/data/local/daos/task_dao.dart';
+import '../local/daos/task_dao.dart';
+import '../local/tables/tasks.dart';
+
+import '../local/app_database.dart';
 
 class TaskRepository {
-  final TaskDao _taskDao;
-
   TaskRepository(this._taskDao);
 
-  // ----------------------------
-  // Watchers (UI reads)
-  // ----------------------------
+  final TaskDao _taskDao;
 
-  /// Watch all tasks for a given inspection (by inspection UUID).
-  Stream<List<TaskUi>> watchTasksForInspection(String inspectionId) {
-    return _taskDao
-        .watchForInspection(inspectionId)
-        .map((rows) => rows.map<TaskUi>(_mapTaskRowToUi).toList());
+  Stream<List<Task>> watchForInspection(String inspectionId) {
+    return _taskDao.watchForInspection(inspectionId);
   }
 
-  /// Watch a single task by task UUID.
-  Stream<TaskUi?> watchTaskById(String id) {
-    return _taskDao.watchById(id).map((row) => row == null ? null : _mapTaskRowToUi(row));
+  Stream<Task?> watchById(String taskId) {
+    return _taskDao.watchById(taskId);
   }
 
-  // ----------------------------
-  // Commands (UI writes)
-  // ----------------------------
+  Future<Task?> getById(String taskId) {
+    return _taskDao.getById(taskId);
+  }
 
-  /// Marks a task complete/incomplete.
-  /// - If completing: sets completedAt=now (or keeps existing if already set, depending on DAO)
-  /// - Updates lastModifiedAt=now and synced=false
+
   Future<void> setCompleted({
     required String taskId,
     required bool completed,
-    DateTime? now,
-  }) async {
-    final ts = now ?? DateTime.now();
-
-    if (completed) {
-      await _taskDao.markCompleted(taskId, completedAt: ts, lastModifiedAt: ts);
-    } else {
-      await _taskDao.markNotCompleted(taskId, lastModifiedAt: ts);
-    }
+  }) {
+    // DAO owns completedAt + lastModifiedAt + version + syncStatus
+    return _taskDao.updateCompleted(taskId: taskId, completed: completed);
   }
 
-  /// Sets the result (pass/fail/na) and updates lastModifiedAt + synced.
+  /// Sets the task result.
   Future<void> setResult({
     required String taskId,
     String? result, // "pass" | "fail" | "na" | null
-    DateTime? now,
-  }) async {
-    final ts = now ?? DateTime.now();
-    await _taskDao.updateResult(taskId, result: result, lastModifiedAt: ts);
+  }) {
+    // null means "do nothing"
+    if (result == null) return Future.value();
+
+    return _taskDao.updateResult(taskId: taskId, result: result);
   }
 
-  /// Updates notes and bumps lastModifiedAt + synced.
+  /// Sets notes.
   Future<void> setNotes({
     required String taskId,
     String? notes,
-    DateTime? now,
-  }) async {
-    final ts = now ?? DateTime.now();
-    await _taskDao.updateNotes(taskId, notes: notes, lastModifiedAt: ts);
+  }) {
+    // Option 1: null means "do nothing"
+    if (notes == null) return Future.value();
+
+    return _taskDao.updateNotes(taskId: taskId, notes: notes);
   }
 
-  /// Creates or updates a task row (useful if you seed tasks when starting an inspection).
-  /// If you don’t need this yet, you can delete it.
-  Future<void> upsertTask(TaskUi ui, {DateTime? now}) async {
-    final ts = now ?? DateTime.now();
-    await _taskDao.upsert(
-      TaskUpsertRequest(
-        id: ui.id,
-        serverId: ui.serverId,
-        inspectionId: ui.inspectionId,
-        title: ui.title,
-        code: ui.code,
-        description: ui.description,
-        result: ui.result,
-        notes: ui.notes,
-        completed: ui.completed,
-        completedAt: ui.completedAt,
-        lastModifiedAt: ui.lastModifiedAt.isBefore(ts) ? ts : ui.lastModifiedAt,
-        synced: ui.synced,
-      ),
+  /// Convenience for when your UI submits multiple fields together.
+  /// (Prefer this over calling setResult + setNotes + setCompleted separately.)
+  Future<void> updateWork({
+    required String taskId,
+    String? result,
+    String? notes,
+    bool? completed,
+  }) {
+    return _taskDao.updateTaskWork(
+      taskId: taskId,
+      result: result,
+      notes: notes,
+      completed: completed,
     );
   }
 
-  // ----------------------------
-  // Mapping
-  // ----------------------------
+  // --- Sync bookkeeping ---
 
-  // IMPORTANT:
-  // Replace `Task` below with your actual Drift-generated row class type for the tasks table.
-  // You can find it in your app_database.g.dart (search "class Task").
-  TaskUi _mapTaskRowToUi(Task row) {
-    return TaskUi(
-      id: row.id,
-      serverId: row.serverId,
-      inspectionId: row.inspectionId,
-      title: row.title,
-      code: row.code,
-      description: row.description,
-      result: row.result,
-      notes: row.notes,
-      completed: row.completed,
-      completedAt: row.completedAt,
-      lastModifiedAt: row.lastModifiedAt,
-      synced: row.synced,
-    );
+  Future<void> markClean({required String taskId}) {
+    return _taskDao.markClean(taskId);
+  }
+
+  Future<void> markSyncError({
+    required String taskId,
+    required String error,
+  }) {
+    return _taskDao.markSyncError(taskId, error);
+  }
+
+  Future<void> softDelete({required String taskId}) {
+    return _taskDao.softDelete(taskId);
   }
 }
