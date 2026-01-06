@@ -3,24 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:maintenance_logging_system/core/theme/app_theme.dart';
 import 'package:maintenance_logging_system/core/theme/theme_controller.dart';
 import 'package:maintenance_logging_system/screens/home_screen.dart';
-import 'package:maintenance_logging_system/screens/login_screen.dart';
-
-import 'data/local/app_database.dart';
-import 'data/repositories/inspection_repository.dart';
 
 final ThemeController themeController = ThemeController();
 
 class App extends StatelessWidget {
-  final InspectionRepository inspectionRepo;
-  final TaskRepository taskRepo;
-  final AppDatabase db; // optional, useful for closing later
-
-  const App({
-    super.key,
-    required this.inspectionRepo,
-    required this.taskRepo,
-    required this.db,
-  });
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +20,7 @@ class App extends StatelessWidget {
           darkTheme: AppTheme.dark,
           themeMode: themeMode,
           debugShowCheckedModeBanner: false,
-          home: AppRoot(
-            inspectionRepo: inspectionRepo,
-            taskRepo: taskRepo,
-          ),
+          home: const AppRoot(),
         );
       },
     );
@@ -44,20 +28,10 @@ class App extends StatelessWidget {
 }
 
 class AppRoot extends StatelessWidget {
-  final InspectionRepository inspectionRepo;
-  final TaskRepository taskRepo;
-
-  const AppRoot({
-    super.key,
-    required this.inspectionRepo,
-    required this.taskRepo,
-  });
+  const AppRoot({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return HomeScreen(
-      inspectionRepo: inspectionRepo,
-      taskRepo: taskRepo,
-    );
+    return const HomeScreen(); // no params now
   }
 }
