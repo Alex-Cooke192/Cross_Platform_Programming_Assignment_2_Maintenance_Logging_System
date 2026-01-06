@@ -8,18 +8,18 @@ class StartInspection {
     required List<InspectionUi> allInspections,
   }) {
     final inProgressCount =
-        allInspections.where((i) => i.statusLabel == 'In Progress').length;
+        allInspections.where((i) => i.status == 'In Progress').length;
 
     if (inProgressCount >= maxInProgress) {
       throw const TooManyInProgressInspections();
     }
 
-    if (inspection.statusLabel != 'Outstanding') {
+    if (inspection.status != 'Outstanding') {
       throw const InvalidInspectionState();
     }
 
     return inspection.copyWith(
-      statusLabel: 'In Progress',
+      status: 'In Progress',
       openedAt: DateTime.now(),
     );
   }
