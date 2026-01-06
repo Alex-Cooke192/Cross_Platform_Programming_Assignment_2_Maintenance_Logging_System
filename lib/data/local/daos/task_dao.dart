@@ -31,7 +31,11 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     return (select(tasks)..where((t) => t.id.equals(taskId))).getSingleOrNull();
   }
 
-  /// Shared update helper that preserves invariants:
+  /// Shared update helper that preserves invariants for user work updates:
+  /// - bumps lastModifiedAt
+  /// - marks syncStatus dirty
+  /// - increments version
+  /// - sets/clears completedAt only when completed is explicitly updated
   Future<void> _updateTask({
     required String taskId,
     String? result,
@@ -130,34 +134,75 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
 
   /// Mark as clean after successful sync
   Future<void> markClean(String taskId, {DateTime? syncedAt}) async {
-    await (update(tasks)..where((t) => t.id.equals(taskId))).write(
-      TasksCompanion(
-        syncStatus: const Value('clean'),
-        lastSyncedAt: Value(syncedAt ?? DateTime.now()),
-        syncError: const Value(null),
-      ),
-    );
+    final now = DateTime.now();
+
+    await transaction(() async {
+      final existing = await getById(taskId);
+      if (existing == null) {
+        throw StateError('Task not found: $taskId');
+      }
+
+      await (update(tasks)..where((t) => t.id.equals(taskId))).write(
+        TasksCompanion(
+          syncStatus: const Value('clean'),
+          lastSyncedAt: Value(syncedAt ?? now),
+          syncError: const Value(null),
+
+          // Include lastModifiedAt because the row changed.
+          lastModifiedAt: Value(now),
+
+          // Optional but recommended: keep version monotonic for any row mutation.
+          version: Value(existing.version + 1),
+        ),
+      );
+    });
   }
 
-  /// Record a sync failure. 
+  /// Record a sync failure.
   Future<void> markSyncError(String taskId, String error) async {
-    await (update(tasks)..where((t) => t.id.equals(taskId))).write(
-      TasksCompanion(
-        syncStatus: const Value('error'),
-        syncError: Value(error),
-      ),
-    );
+    final now = DateTime.now();
+
+    await transaction(() async {
+      final existing = await getById(taskId);
+      if (existing == null) {
+        throw StateError('Task not found: $taskId');
+      }
+
+      await (update(tasks)..where((t) => t.id.equals(taskId))).write(
+        TasksCompanion(
+          syncStatus: const Value('error'),
+          syncError: Value(error),
+
+          // Include lastModifiedAt because the row changed.
+          lastModifiedAt: Value(now),
+
+          // Optional but recommended: keep version monotonic for any row mutation.
+          version: Value(existing.version + 1),
+        ),
+      );
+    });
   }
 
   /// Soft delete a task locally (tombstone)
   Future<void> softDelete(String taskId) async {
     final now = DateTime.now();
-    await (update(tasks)..where((t) => t.id.equals(taskId))).write(
-      TasksCompanion(
-        deletedAt: Value(now),
-        syncStatus: const Value('dirty'),
-        lastModifiedAt: Value(now),
-      ),
-    );
+
+    await transaction(() async {
+      final existing = await getById(taskId);
+      if (existing == null) {
+        throw StateError('Task not found: $taskId');
+      }
+
+      await (update(tasks)..where((t) => t.id.equals(taskId))).write(
+        TasksCompanion(
+          deletedAt: Value(now),
+          syncStatus: const Value('dirty'),
+          lastModifiedAt: Value(now),
+
+          // Optional but recommended: keep version monotonic for any row mutation.
+          version: Value(existing.version + 1),
+        ),
+      );
+    });
   }
 }
