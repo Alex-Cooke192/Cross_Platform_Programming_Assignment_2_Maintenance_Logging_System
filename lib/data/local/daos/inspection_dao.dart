@@ -2,6 +2,7 @@
 import 'package:drift/drift.dart';
 import '../app_database.dart';
 import '../tables/inspections.dart';
+import '../../../models/inspection_statuses.dart';
 
 part 'inspection_dao.g.dart';
 
@@ -22,9 +23,23 @@ class InspectionDao extends DatabaseAccessor<AppDatabase>
         .watchSingleOrNull();
   }
 
-  Future<void> updateStatus(String id, String status) {
-    return (update(inspections)
-          ..where((tbl) => tbl.id.equals(id)))
-        .write(InspectionsCompanion(status: Value(status)));
+  Future<void> markInProgress(String id, DateTime openedAt) {
+    return (update(inspections)..where((t) => t.id.equals(id))).write(
+      InspectionsCompanion(
+        status: const Value(InspectionStatuses.inProgress),
+        openedAt: Value(openedAt),
+        closedAt: const Value.absent(),
+      ),
+    );
   }
+
+  Future<void> markCompleted(String id, DateTime closedAt) {
+    return (update(inspections)..where((t) => t.id.equals(id))).write(
+      InspectionsCompanion(
+        status: const Value(InspectionStatuses.completedAwaitingSync),
+        closedAt: Value(closedAt),
+      ),
+    );
+  }
+
 }
