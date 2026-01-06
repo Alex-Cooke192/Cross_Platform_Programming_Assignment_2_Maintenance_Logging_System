@@ -1,5 +1,9 @@
 import 'dart:convert';
 
+import '../../models/inspection_statuses.dart';
+import '../../models/outbox_entity_types.dart';
+import '../../models/outbox_types.dart';
+
 import '../../models/ui_models.dart';
 import '../local/daos/inspection_dao.dart';
 import '../local/daos/task_dao.dart';
@@ -7,23 +11,7 @@ import '../local/daos/outbox_dao.dart';
 import '../local/tables/inspections.dart';
 import '../local/tables/tasks.dart';
 
-/// UI-facing workflow status values (string-only).
-/// Make these match whatever your UI buckets use.
-class InspectionStatuses {
-  static const outstanding = 'outstanding';
-  static const inProgress = 'in_progress';
-  static const completedAwaitingSync = 'completed_awaiting_sync';
-}
-
-/// Optional: outbox type constants (string-only).
-class OutboxTypes {
-  static const inspectionStarted = 'INSPECTION_STARTED';
-  static const inspectionCompleted = 'INSPECTION_COMPLETED';
-}
-
-class OutboxEntityTypes {
-  static const inspection = 'inspection';
-}
+import '../local/app_database.dart';
 
 /// Repository = app/business logic over DAOs.
 /// - Reads from DB via DAO streams
@@ -43,7 +31,7 @@ class InspectionRepository {
         _outboxDao = outboxDao;
 
   // -----------------------------
-  // Streams for your 3 UI buckets
+  // Streams for 3 UI buckets
   // -----------------------------
 
   Stream<List<InspectionUi>> watchOutstandingInspections() {
@@ -77,7 +65,7 @@ class InspectionRepository {
   Stream<List<TaskUi>> watchTasksForInspection(String inspectionId) {
     return _taskDao
         .watchForInspection(inspectionId)
-        .map((rows) => rows.map(_mapTaskRowToUi).toList());
+        .map((rows) => rows.map<TaskUi>(_mapTaskRowToUi).toList());
   }
 
   // -----------------------------
@@ -87,7 +75,6 @@ class InspectionRepository {
   /// When the user hits "Start inspection".
   /// - sets status to in_progress
   /// - sets openedAt if missing (optional)
-  /// - marks sync dirty (if you keep syncStatus)
   /// - enqueues an outbox item
   Future<void> startInspection({
     required String inspectionId,
@@ -95,8 +82,8 @@ class InspectionRepository {
   }) async {
     final now = DateTime.now();
 
-    await _inspectionDao.updateStatus(
-      inspectionId, 'In Progress', 
+    await _inspectionDao.markInProgress(
+      inspectionId, DateTime.now(),
     );
 
     await _outboxDao.enqueue(
@@ -126,9 +113,8 @@ class InspectionRepository {
   }) async {
     final now = DateTime.now();
 
-    await _inspectionDao.updateStatus(
-      inspectionId, 'Complete', 
-
+    await _inspectionDao.markCompleted(
+      inspectionId, DateTime.now(), 
     );
 
     await _outboxDao.enqueue(
@@ -147,6 +133,7 @@ class InspectionRepository {
     );
   }
 
+  /*
   /// Optional: pausing an inspection (if your UI supports it).
   /// You can either:
   /// - set status back to outstanding, or
@@ -182,6 +169,7 @@ class InspectionRepository {
       idempotencyKey: 'inspection_paused:$inspectionId:${now.millisecondsSinceEpoch}',
     );
   }
+  */
 
   // -----------------------------
   // Mapping Drift rows -> UI models
@@ -192,10 +180,11 @@ class InspectionRepository {
     return InspectionUi(
       id: row.id,
       aircraftTailNumber: row.aircraftTailNumber,
-      status: row.status,
+      openedByTechnicianUid: row.openedByTechnicianUid,
       openedAt: row.openedAt,
       closedAt: row.closedAt,
-      openedByTechnicianUid: row.openedByTechnicianUid,
+      status: row.status,
+      synced: row.synced, 
     );
   }
 
@@ -203,14 +192,17 @@ class InspectionRepository {
     // Adjust to match your actual TaskUi fields.
     return TaskUi(
       id: row.id,
+      serverId: row.serverId,
       inspectionId: row.inspectionId,
-      code: row.code,
       title: row.title,
+      code: row.code,
       description: row.description,
-      resultLabel: row.result, // you used resultLabel earlier in UI
+      result: row.result, // you used resultLabel earlier in UI
       notes: row.notes,
       completed: row.completed,
-      completedAt: row.completedAt,
+      completedAt: row.completedAt, 
+      lastModifiedAt: row.lastModifiedAt, 
+      synced: row.synced, 
     );
   }
 }
