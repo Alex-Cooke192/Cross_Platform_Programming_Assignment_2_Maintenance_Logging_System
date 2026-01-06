@@ -42,4 +42,39 @@ class InspectionDao extends DatabaseAccessor<AppDatabase>
     );
   }
 
+  // Counts inspections with status = outstanding
+  Stream<int> watchReadyToBeginCount() {
+    final query = selectOnly(inspections)
+      ..addColumns([inspections.id.count()])
+      ..where(inspections.status.equals('outstanding'));
+
+    return query.watchSingle().map((row) {
+      return row.read(inspections.id.count()) ?? 0;
+    });
+  }
+
+  // Counts inspections with status = In Progress
+  Stream<int> watchInProgressCount() {
+    final query = selectOnly(inspections)
+      ..addColumns([inspections.id.count()])
+      ..where(inspections.status.equals('in_progress'));
+
+    return query.watchSingle().map((row) {
+      return row.read(inspections.id.count()) ?? 0;
+    });
+  }
+
+  // Counts inspections completed but not yet synced
+  Stream<int> watchAwaitingSyncCount() {
+    final query = selectOnly(inspections)
+      ..addColumns([inspections.id.count()])
+      ..where(
+        inspections.status.equals('completed_awaiting_sync') &
+        inspections.syncStatus.isNotIn(['clean']),
+      );
+
+    return query.watchSingle().map((row) {
+      return row.read(inspections.id.count()) ?? 0;
+    });
+  }
 }
