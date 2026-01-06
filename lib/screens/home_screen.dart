@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../data/repositories/inspection_repository.dart';
+import '../data/repositories/task_repository.dart';
+import '../widgets/signed_in_as_widget.dart';
 
 import 'outstanding_inspection_list_screen.dart';
 import 'current_inspection_list_screen.dart';
-import '../mocks/mock_models.dart';
-import '../widgets/signed_in_as_widget.dart';
-import '../models/ui_models.dart';
 import 'completed_inspection_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  // For now (MockData), we’ll derive tasks for an inspection here.
-  // IMPORTANT: adjust the matching logic based on your real TaskUi fields.
-  List<TaskUi> _tasksForInspection(InspectionUi inspection) {
-    // If your TaskUi has inspectionId, prefer that:
-    // return MockData.tasks.where((t) => t.inspectionId == inspection.id).toList();
-
-    // Fallback (demo): return all tasks (replace this ASAP)
-    return MockData.tasks;
-  }
-
   @override
   Widget build(BuildContext context) {
+    final inspectionRepo = context.read<InspectionRepository>();
+    final taskRepo = context.read<TaskRepository>(); // keep if needed later
+
+    // ✅ Replace these with your real repo methods.
+    final readyToBeginCount$ = inspectionRepo.watchReadyToBeginCount();
+    final inProgressCount$ = inspectionRepo.watchInProgressCount();
+    final awaitingSyncCount$ = inspectionRepo.watchAwaitingSyncCount();
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -32,7 +32,7 @@ class HomeScreen extends StatelessWidget {
           child: SignedInAs(userLabel: 'user.name'),
         ),
         actions: const [
-          Icon(Icons.sync), // later: sync status indicator
+          Icon(Icons.sync),
           SizedBox(width: 12),
         ],
       ),
@@ -46,65 +46,70 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            _DashboardCard(
-              title: 'Assigned Inspections: Ready to begin',
-              value: '3',
-              icon: Icons.assignment,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => OutstandingInspectionListScreen(
-                      inspections: MockData.inspections,
-                      tasks: MockData.tasks,
-                    ),
-                  ),
+
+            StreamBuilder<int>(
+              stream: readyToBeginCount$,
+              initialData: 0,
+              builder: (context, snap) {
+                final value = snap.data ?? 0;
+                return _DashboardCard(
+                  title: 'Assigned Inspections: Ready to begin',
+                  value: '$value',
+                  icon: Icons.assignment,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const OutstandingInspectionListScreen(),
+                      ),
+                    );
+                  },
                 );
               },
             ),
-            const SizedBox(height: 12),
-            _DashboardCard(
-              title: 'Assigned Inspections: In Progress',
-              value: '1',
-              icon: Icons.build,
-              onTap: () {
-                // 1) filter inspections to only "in progress"
-                final inProgress = MockData.inspections
-                    .where((i) => i.status == "In Progress") // adjust to your model
-                    .toList();
 
-                // 2) navigate
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CurrentInspectionListScreen(
-                      inProgressInspections: inProgress,
-                      tasksForInspection: _tasksForInspection,
-                    ),
-                  ),
+            const SizedBox(height: 12),
+
+            StreamBuilder<int>(
+              stream: inProgressCount$,
+              initialData: 0,
+              builder: (context, snap) {
+                final value = snap.data ?? 0;
+                return _DashboardCard(
+                  title: 'Assigned Inspections: In Progress',
+                  value: '$value',
+                  icon: Icons.build,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const CurrentInspectionListScreen(),
+                      ),
+                    );
+                  },
                 );
               },
             ),
-            const SizedBox(height: 12),
-            _DashboardCard(
-              title: 'Assigned Inspections: Completed • Awaiting Sync',
-              value: '2',
-              icon: Icons.cloud_upload,
-              onTap: () {
-                // 1) filter inspections to only "completed"
-                final completed = MockData.inspections
-                    .where((i) => i.status == "Completed") // adjust if enum/string differs
-                    .toList();
 
-                // 2) navigate to completed (read-only) review screen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CompletedInspectionListScreen(
-                      completedInspections: completed,
-                      allTasks: MockData.tasks, 
-                    ),
-                  ),
+            const SizedBox(height: 12),
+
+            StreamBuilder<int>(
+              stream: awaitingSyncCount$,
+              initialData: 0,
+              builder: (context, snap) {
+                final value = snap.data ?? 0;
+                return _DashboardCard(
+                  title: 'Assigned Inspections: Completed • Awaiting Sync',
+                  value: '$value',
+                  icon: Icons.cloud_upload,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const CompletedInspectionListScreen(),
+                      ),
+                    );
+                  },
                 );
               },
             ),
