@@ -19,7 +19,6 @@ class InspectionStatuses {
 class OutboxTypes {
   static const inspectionStarted = 'INSPECTION_STARTED';
   static const inspectionCompleted = 'INSPECTION_COMPLETED';
-  static const inspectionPaused = 'INSPECTION_PAUSED';
 }
 
 class OutboxEntityTypes {
@@ -50,19 +49,19 @@ class InspectionRepository {
   Stream<List<InspectionUi>> watchOutstandingInspections() {
     return _inspectionDao
         .watchByStatus(InspectionStatuses.outstanding)
-        .map((rows) => rows.map(_mapInspectionRowToUi).toList());
+        .map((rows) => rows.map<InspectionUi>(_mapInspectionRowToUi).toList());
   }
 
   Stream<List<InspectionUi>> watchInProgressInspections() {
     return _inspectionDao
         .watchByStatus(InspectionStatuses.inProgress)
-        .map((rows) => rows.map(_mapInspectionRowToUi).toList());
+        .map((rows) => rows.map<InspectionUi>(_mapInspectionRowToUi).toList());
   }
 
   Stream<List<InspectionUi>> watchCompletedAwaitingSyncInspections() {
     return _inspectionDao
         .watchByStatus(InspectionStatuses.completedAwaitingSync)
-        .map((rows) => rows.map(_mapInspectionRowToUi).toList());
+        .map((rows) => rows.map<InspectionUi>(_mapInspectionRowToUi).toList());
   }
 
   // -----------------------------
@@ -96,13 +95,8 @@ class InspectionRepository {
   }) async {
     final now = DateTime.now();
 
-    await _inspectionDao.updateInspection(
-      inspectionId: inspectionId,
-      status: InspectionStatuses.inProgress,
-      // if your inspections table has openedAt, keep it as-is; otherwise remove this param
-      openedAtIfNull: now,
-      lastModifiedAt: now,
-      syncStatus: 'dirty',
+    await _inspectionDao.updateStatus(
+      inspectionId, 'In Progress', 
     );
 
     await _outboxDao.enqueue(
@@ -132,12 +126,9 @@ class InspectionRepository {
   }) async {
     final now = DateTime.now();
 
-    await _inspectionDao.updateInspection(
-      inspectionId: inspectionId,
-      status: InspectionStatuses.completedAwaitingSync,
-      closedAt: now,
-      lastModifiedAt: now,
-      syncStatus: 'dirty',
+    await _inspectionDao.updateStatus(
+      inspectionId, 'Complete', 
+
     );
 
     await _outboxDao.enqueue(
