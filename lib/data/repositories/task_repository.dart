@@ -1,18 +1,8 @@
 // lib/data/repositories/task_repository.dart
 //
 // TaskRepository sits between UI and the local DB layer (TaskDao).
-// - Exposes UI-friendly models (TaskUi)
 // - Converts from Drift rows -> TaskUi
 // - Keeps DB concerns inside the DAO
-//
-// Assumptions based on our schema + decisions:
-// - ids are UUID Strings (Task.id, Task.inspectionId)
-// - result is stored as canonical value: "pass" | "fail" | "na" (nullable)
-// - lastModifiedAt is required (non-null) in UI + DB
-// - synced is required (non-null) in UI + DB
-//
-// You will need to adjust the import paths + the Drift row type name.
-// The row type is whatever Drift generated for your Tasks table (often `Task`).
 
 import 'package:maintenance_logging_system/models/ui_models.dart';
 import 'package:maintenance_logging_system/data/local/daos/task_dao.dart';
