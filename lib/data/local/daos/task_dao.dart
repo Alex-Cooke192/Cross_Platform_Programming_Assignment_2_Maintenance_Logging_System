@@ -26,20 +26,15 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     return (select(tasks)..where((t) => t.id.equals(taskId))).watchSingleOrNull();
   }
 
-  /// One-shot fetch (sometimes useful in services).
+  /// One-shot fetch by id
   Future<Task?> getById(String taskId) {
     return (select(tasks)..where((t) => t.id.equals(taskId))).getSingleOrNull();
   }
 
-  /// Update the user's work on a task.
-  /// - updates result/notes
-  /// - updates completed/completedAt (optional)
-  /// - bumps lastModifiedAt
-  /// - marks syncStatus dirty
-  /// - increments version
-  Future<void> updateTaskWork({
+  /// Shared update helper that preserves invariants:
+  Future<void> _updateTask({
     required String taskId,
-    String? result, // e.g. 'pass'/'fail'/'na'
+    String? result,
     String? notes,
     bool? completed,
   }) async {
@@ -51,17 +46,30 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         throw StateError('Task not found: $taskId');
       }
 
-      final newCompleted = completed ?? existing.completed;
-      final completedAtValue = newCompleted
-          ? Value(existing.completedAt ?? now)
-          : const Value<DateTime?>(null);
+      // Only update completed/completedAt if caller explicitly provided `completed`.
+      final bool newCompleted = completed ?? existing.completed;
+
+      final Value<bool> completedValue =
+          completed != null ? Value(newCompleted) : const Value.absent();
+
+      final Value<DateTime?> completedAtValue;
+      if (completed == null) {
+        completedAtValue = const Value.absent();
+      } else if (newCompleted) {
+        completedAtValue = Value(existing.completedAt ?? now);
+      } else {
+        completedAtValue = const Value<DateTime?>(null);
+      }
 
       await (update(tasks)..where((t) => t.id.equals(taskId))).write(
         TasksCompanion(
-          result: Value(result),
-          notes: Value(notes),
-          completed: Value(newCompleted),
+          // Only touch fields that were provided.
+          result: result != null ? Value(result) : const Value.absent(),
+          notes: notes != null ? Value(notes) : const Value.absent(),
+          completed: completedValue,
           completedAt: completedAtValue,
+
+          // Always bump these on user work updates.
           lastModifiedAt: Value(now),
           syncStatus: const Value('dirty'),
           version: Value(existing.version + 1),
@@ -70,9 +78,45 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     });
   }
 
-  /// Convenience: just mark a task completed (and dirty).
+  // Split APIs for the above function
+
+  Future<void> updateResult({
+    required String taskId,
+    required String result, // e.g. 'pass'/'fail'/'na'
+  }) {
+    return _updateTask(taskId: taskId, result: result);
+  }
+
+  Future<void> updateNotes({
+    required String taskId,
+    required String notes,
+  }) {
+    return _updateTask(taskId: taskId, notes: notes);
+  }
+
+  Future<void> updateCompleted({
+    required String taskId,
+    required bool completed,
+  }) {
+    return _updateTask(taskId: taskId, completed: completed);
+  }
+
+  Future<void> updateTaskWork({
+    required String taskId,
+    String? result, // e.g. 'pass'/'fail'/'na'
+    String? notes,
+    bool? completed,
+  }) {
+    return _updateTask(
+      taskId: taskId,
+      result: result,
+      notes: notes,
+      completed: completed,
+    );
+  }
+
   Future<void> markCompleted(String taskId, {String? result, String? notes}) {
-    return updateTaskWork(
+    return _updateTask(
       taskId: taskId,
       result: result,
       notes: notes,
@@ -80,12 +124,11 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     );
   }
 
-  /// Convenience: undo completion (and dirty).
   Future<void> markNotCompleted(String taskId) {
-    return updateTaskWork(taskId: taskId, completed: false);
+    return updateCompleted(taskId: taskId, completed: false);
   }
 
-  /// Mark as clean after successful sync.
+  /// Mark as clean after successful sync
   Future<void> markClean(String taskId, {DateTime? syncedAt}) async {
     await (update(tasks)..where((t) => t.id.equals(taskId))).write(
       TasksCompanion(
@@ -96,7 +139,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     );
   }
 
-  /// Record a sync failure.
+  /// Record a sync failure. 
   Future<void> markSyncError(String taskId, String error) async {
     await (update(tasks)..where((t) => t.id.equals(taskId))).write(
       TasksCompanion(
@@ -106,7 +149,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     );
   }
 
-  /// Soft delete a task locally (tombstone) + mark dirty.
+  /// Soft delete a task locally (tombstone)
   Future<void> softDelete(String taskId) async {
     final now = DateTime.now();
     await (update(tasks)..where((t) => t.id.equals(taskId))).write(
