@@ -201,7 +201,7 @@ class _InspectionCard extends StatelessWidget {
         onTap: onTap,
         leading: const Icon(Icons.assignment_outlined),
         title: Text(
-          inspection.id,
+          inspection.id.toString(),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
