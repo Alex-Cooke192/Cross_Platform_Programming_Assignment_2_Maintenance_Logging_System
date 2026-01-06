@@ -45,10 +45,10 @@ class _CurrentTaskDetailsScreenState extends State<CurrentTaskDetailsScreen> {
     super.initState();
 
     // Treat "resultLabel" being set as completion (matches your earlier logic).
-    final initialResult = (widget.task.resultLabel ?? '').trim();
+    final initialResult = (widget.task.result ?? '').trim();
     _isComplete = initialResult.isNotEmpty && initialResult != '—';
 
-    _resultController = TextEditingController(text: widget.task.resultLabel ?? '');
+    _resultController = TextEditingController(text: widget.task.result ?? '');
     _notesController = TextEditingController(text: _readNotes(widget.task));
   }
 

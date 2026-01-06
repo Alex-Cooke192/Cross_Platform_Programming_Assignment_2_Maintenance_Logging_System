@@ -140,7 +140,7 @@ class _InspectionHeaderCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text('Status: ${inspection.statusLabel}'),
+            Text('Status: ${inspection.status}'),
             const SizedBox(height: 4),
             Text('Opened by: ${inspection.openedByTechnicianUid}'),
             const SizedBox(height: 4),
@@ -170,7 +170,7 @@ class _TaskTile extends StatelessWidget {
     final subtitleParts = <String>[
       if (task.code != null && task.code!.trim().isNotEmpty)
         task.code!.trim(),
-      if (task.resultLabel != null) 'Result: ${task.resultLabel}',
+      if (task.result != null) 'Result: ${task.result}',
       if (task.notes != null && task.notes!.trim().isNotEmpty)
         'Notes added',
     ];

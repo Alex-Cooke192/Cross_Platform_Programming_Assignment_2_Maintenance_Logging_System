@@ -57,7 +57,7 @@ class _OutstandingInspectionListScreenState
                 inspection.aircraftTailNumber,
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              trailing: Text(inspection.statusLabel),
+              trailing: Text(inspection.status),
               onTap: () {
                 Navigator.push(
                   context,

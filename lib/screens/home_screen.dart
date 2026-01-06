@@ -70,7 +70,7 @@ class HomeScreen extends StatelessWidget {
               onTap: () {
                 // 1) filter inspections to only "in progress"
                 final inProgress = MockData.inspections
-                    .where((i) => i.statusLabel == "In Progress") // adjust to your model
+                    .where((i) => i.status == "In Progress") // adjust to your model
                     .toList();
 
                 // 2) navigate
@@ -93,7 +93,7 @@ class HomeScreen extends StatelessWidget {
               onTap: () {
                 // 1) filter inspections to only "completed"
                 final completed = MockData.inspections
-                    .where((i) => i.statusLabel == "Completed") // adjust if enum/string differs
+                    .where((i) => i.status == "Completed") // adjust if enum/string differs
                     .toList();
 
                 // 2) navigate to completed (read-only) review screen

@@ -107,7 +107,7 @@ class CurrentInspectionDetailsScreen extends StatelessWidget {
   }
 
   bool _isTaskComplete(TaskUi task) {
-    final label = (task.resultLabel ?? '').trim();
+    final label = (task.result ?? '').trim();
     return label.isNotEmpty && label != '—';
   }
 }
@@ -141,7 +141,7 @@ class _HeaderCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              inspectionId,
+              inspectionId.toString(),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -255,7 +255,7 @@ class _TaskTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final code = (task.code ?? '').trim();
-    final result = (task.resultLabel ?? '—').trim();
+    final result = (task.result ?? '—').trim();
     final isComplete = result.isNotEmpty && result != '—';
 
     return Card(

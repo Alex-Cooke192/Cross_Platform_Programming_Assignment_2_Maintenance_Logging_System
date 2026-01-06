@@ -12,7 +12,7 @@ class InspectionService {
 
   /// Convenience: count how many inspections are currently in progress.
   int inProgressCount(List<InspectionUi> allInspections) {
-    return allInspections.where((i) => i.statusLabel == 'In Progress').length;
+    return allInspections.where((i) => i.status == 'In Progress').length;
   }
 
   /// Returns true if another inspection can be started right now.

@@ -11,7 +11,7 @@ class OutstandingTaskDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resultText = task.resultLabel ?? '—';
+    final resultText = task.result ?? '—';
     final codeText =
         (task.code != null && task.code!.trim().isNotEmpty) ? task.code!.trim() : '—';
     final descText =

@@ -216,7 +216,7 @@ class _TaskReviewList extends StatelessWidget {
     return Column(
       children: tasks.map((t) {
         final code = (t.code ?? '').trim();
-        final result = (t.resultLabel ?? '—').trim();
+        final result = (t.result ?? '—').trim();
 
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
