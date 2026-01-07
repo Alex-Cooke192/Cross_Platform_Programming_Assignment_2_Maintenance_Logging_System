@@ -80,7 +80,7 @@ class OutstandingInspectionDetailsScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
-                                    OutstandingTaskDetailsScreen(task: task),
+                                    OutstandingTaskDetailsScreen(),
                               ),
                             );
                           },
