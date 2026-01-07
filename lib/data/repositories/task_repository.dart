@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:maintenance_logging_system/models/ui_models.dart';
 
 import '../local/daos/task_dao.dart';
 import '../local/tables/tasks.dart';
@@ -9,6 +10,30 @@ class TaskRepository {
   TaskRepository(this._taskDao);
 
   final TaskDao _taskDao;
+
+  Stream<TaskUi?> watchTask(String taskId) {
+    return _taskDao
+        .watchById(taskId) // Stream<Task?>
+        .map((row) => row == null ? null : _mapTaskRowToUi(row));
+  }
+
+  // Map Drift row -> UI model (copy from InspectionRepository)
+  TaskUi _mapTaskRowToUi(Task row) {
+    return TaskUi(
+      id: row.id,
+      serverId: row.serverId,
+      inspectionId: row.inspectionId,
+      title: row.title,
+      code: row.code,
+      description: row.description,
+      result: row.result,
+      notes: row.notes,
+      completed: row.completed,
+      completedAt: row.completedAt,
+      lastModifiedAt: row.lastModifiedAt,
+      synced: row.synced,
+    );
+  }
 
   Stream<List<Task>> watchForInspection(String inspectionId) {
     return _taskDao.watchForInspection(inspectionId);
@@ -22,7 +47,6 @@ class TaskRepository {
   Future<Task?> getById(String taskId) {
     return _taskDao.getById(taskId);
   }
-
 
   Future<void> setCompleted({
     required String taskId,
