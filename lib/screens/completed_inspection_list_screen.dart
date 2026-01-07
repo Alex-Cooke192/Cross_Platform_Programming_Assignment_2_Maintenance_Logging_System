@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../data/repositories/inspection_repository.dart';
 import '../models/ui_models.dart';
 
 /// A read-only "review" list for completed inspections.
@@ -9,64 +12,64 @@ import '../models/ui_models.dart';
 /// - "Timeline" row showing Opened -> Completed
 /// - Expandable task list for each inspection (keeps the list scannable)
 class CompletedInspectionListScreen extends StatelessWidget {
-  final List<InspectionUi> completedInspections;
-
-  /// All tasks (we'll group by inspectionId).
-  final List<TaskUi> allTasks;
-
-  const CompletedInspectionListScreen({
-    super.key,
-    required this.completedInspections,
-    required this.allTasks,
-  });
+  const CompletedInspectionListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final inspections = [...completedInspections];
+    final inspectionRepo = context.read<InspectionRepository>();
 
-    // Sort: newest completed first (fallback to openedAt if needed)
-    inspections.sort((a, b) {
-      final aTime = a.closedAt ?? a.openedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final bTime = b.closedAt ?? b.openedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      return bTime.compareTo(aTime);
-    });
+    return StreamBuilder<List<InspectionUi>>(
+      stream: inspectionRepo.watchCompletedAwaitingSyncInspections(),
+      initialData: const [],
+      builder: (context, snap) {
+        final completedInspections = snap.data ?? const [];
+        final inspections = [...completedInspections];
 
-    // Group tasks by inspection id
-    final tasksByInspection = <String, List<TaskUi>>{};
-    for (final t in allTasks) {
-      final key = t.inspectionId;
-      tasksByInspection.putIfAbsent(key, () => []).add(t);
-    }
+        // Sort: newest completed first (fallback to openedAt if needed)
+        inspections.sort((a, b) {
+          final aTime = a.closedAt ?? a.openedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final bTime = b.closedAt ?? b.openedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return bTime.compareTo(aTime);
+        });
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Completed Inspections'),
-      ),
-      body: inspections.isEmpty
-          ? _EmptyState()
-          : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-              itemCount: inspections.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final insp = inspections[index];
-                final tasks = (tasksByInspection[insp.id] ?? [])
-                  ..sort((a, b) {
-                    final ac = (a.code ?? '').compareTo(b.code ?? '');
-                    if (ac != 0) return ac;
-                    return a.title.compareTo(b.title);
-                  });
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: const Text('Completed Inspections'),
+          ),
+          body: inspections.isEmpty
+              ? _EmptyState()
+              : ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  itemCount: inspections.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final insp = inspections[index];
 
-                return _CompletedInspectionCard(
-                  inspection: insp,
-                  tasks: tasks,
-                );
-              },
-            ),
+                    return StreamBuilder<List<TaskUi>>(
+                      stream: inspectionRepo.watchTasksForInspection(insp.id),
+                      initialData: const [],
+                      builder: (context, taskSnap) {
+                        final tasks = (taskSnap.data ?? const [])..sort((a, b) {
+                          final ac = (a.code ?? '').compareTo(b.code ?? '');
+                          if (ac != 0) return ac;
+                          return a.title.compareTo(b.title);
+                        });
+
+                        return _CompletedInspectionCard(
+                          inspection: insp,
+                          tasks: tasks,
+                        );
+                      },
+                    );
+                  },
+                ),
+        );
+      },
     );
   }
 }
+
 
 class _CompletedInspectionCard extends StatelessWidget {
   final InspectionUi inspection;

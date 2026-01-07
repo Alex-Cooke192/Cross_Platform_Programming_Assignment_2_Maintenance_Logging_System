@@ -1,114 +1,149 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../data/repositories/inspection_repository.dart';
 import '../models/ui_models.dart';
 import 'current_task_details_screen.dart';
 
 class CurrentInspectionDetailsScreen extends StatelessWidget {
-  final InspectionUi inspection;
-  final List<TaskUi> tasks;
-
-  /// Called when user taps "Mark complete" (you decide what that means in your state/store).
-  final VoidCallback onMarkComplete;
-
-  /// Optional: called if you want a "Pause" / "Exit inspection" action.
-  final VoidCallback? onPauseInspection;
+  final String inspectionId;
 
   const CurrentInspectionDetailsScreen({
     super.key,
-    required this.inspection,
-    required this.tasks,
-    required this.onMarkComplete,
-    this.onPauseInspection,
+    required this.inspectionId,
   });
 
   @override
   Widget build(BuildContext context) {
-    final sortedTasks = [...tasks]..sort((a, b) {
-      final ac = (a.code ?? '').compareTo(b.code ?? '');
-      if (ac != 0) return ac;
-      return a.title.compareTo(b.title);
-    });
+    final inspectionRepo = context.read<InspectionRepository>();
 
-    final completedCount = sortedTasks.where(_isTaskComplete).length;
-    final totalCount = sortedTasks.length;
-    final progress = totalCount == 0 ? 0.0 : (completedCount / totalCount);
+    return StreamBuilder<InspectionUi?>(
+      stream: inspectionRepo.watchInspection(inspectionId),
+      builder: (context, inspectionSnap) {
+        final inspection = inspectionSnap.data;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Current Inspection'),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Center(child: _StatusChip(label: 'IN PROGRESS')),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _HeaderCard(
-            inspection: inspection,
-            completedCount: completedCount,
-            totalCount: totalCount,
-            progress: progress,
-          ),
-          const SizedBox(height: 16),
+        if (inspectionSnap.connectionState == ConnectionState.waiting &&
+            inspection == null) {
+          return Scaffold(
+            appBar: AppBar(title: Text('Current Inspection')),
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-          _SectionTitle(
-            title: 'Tasks',
-            trailing: Text(
-              totalCount == 0 ? '—' : '$completedCount / $totalCount',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-          const SizedBox(height: 8),
+        if (inspection == null) {
+          return Scaffold(
+            appBar: AppBar(title: Text('Current Inspection')),
+            body: Center(child: Text('Inspection not found')),
+          );
+        }
 
-          if (sortedTasks.isEmpty)
-            const _EmptyStateCard(
-              title: 'No tasks found',
-              message: 'This inspection has no tasks to complete.',
-            )
-          else
-            ...sortedTasks.map(
-              (t) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _TaskTile(
-                  task: t,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => CurrentTaskDetailsScreen(
+        return StreamBuilder<List<TaskUi>>(
+          stream: inspectionRepo.watchTasksForInspection(inspection.id),
+          initialData: const [],
+          builder: (context, tasksSnap) {
+            final tasks = tasksSnap.data ?? const [];
+
+            final sortedTasks = [...tasks]..sort((a, b) {
+              final ac = (a.code ?? '').compareTo(b.code ?? '');
+              if (ac != 0) return ac;
+              return a.title.compareTo(b.title);
+            });
+
+            final completedCount = sortedTasks.where(_isTaskComplete).length;
+            final totalCount = sortedTasks.length;
+            final progress = totalCount == 0 ? 0.0 : (completedCount / totalCount);
+
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Current Inspection'),
+                actions: const [
+                  Padding(
+                    padding: EdgeInsets.only(right: 12),
+                    child: Center(child: _StatusChip(label: 'IN PROGRESS')),
+                  ),
+                ],
+              ),
+              body: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  _HeaderCard(
+                    inspection: inspection,
+                    completedCount: completedCount,
+                    totalCount: totalCount,
+                    progress: progress,
+                  ),
+                  const SizedBox(height: 16),
+                  _SectionTitle(
+                    title: 'Tasks',
+                    trailing: Text(
+                      totalCount == 0 ? '—' : '$completedCount / $totalCount',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  if (sortedTasks.isEmpty)
+                    const _EmptyStateCard(
+                      title: 'No tasks found',
+                      message: 'This inspection has no tasks to complete.',
+                    )
+                  else
+                    ...sortedTasks.map(
+                      (t) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _TaskTile(
                           task: t,
-                          onSave: (updatedTask) {
-                            // TODO: update this task in your local inspection state/store
-                            // Example (pseudo):
-                            // inspectionStore.updateTask(updatedTask);
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => CurrentTaskDetailsScreen(
+                                  taskId: t.id, // ✅ DI-compatible task details
+                                ),
+                              ),
+                            );
                           },
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+
+                  const SizedBox(height: 20),
+
+                  _ActionsCard(
+                    canComplete: totalCount > 0 && completedCount == totalCount,
+                    onMarkComplete: () => _markInspectionComplete(context, inspection),
+                    onPauseInspection: () => Navigator.of(context).pop(),
+                  ),
+
+                  const SizedBox(height: 24),
+                ],
               ),
-            ),
-
-          const SizedBox(height: 20),
-
-          _ActionsCard(
-            canComplete: totalCount > 0 && completedCount == totalCount,
-            onMarkComplete: onMarkComplete,
-            onPauseInspection: onPauseInspection,
-          ),
-
-          const SizedBox(height: 24),
-        ],
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
   bool _isTaskComplete(TaskUi task) {
+    // Prefer DB field if you have it:
+    if (task.completed) return true;
+
     final label = (task.result ?? '').trim();
     return label.isNotEmpty && label != '—';
+  }
+
+  Future<void> _markInspectionComplete(BuildContext context, InspectionUi inspection) async {
+    final inspectionRepo = context.read<InspectionRepository>();
+
+    // TODO: replace with your real logged-in technician uid
+    const technicianUid = 'TECHNICIAN_UID_TODO';
+
+    await inspectionRepo.completeInspection(
+      inspectionId: inspection.id,
+      technicianUid: technicianUid,
+    );
+
+    if (context.mounted) Navigator.of(context).pop();
   }
 }
 
@@ -150,9 +185,7 @@ class _HeaderCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(subtitleParts.join(' • ')),
             ],
-
             const SizedBox(height: 14),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -168,7 +201,6 @@ class _HeaderCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
               child: LinearProgressIndicator(value: progress),
             ),
-
             const SizedBox(height: 14),
             _InfoGrid(inspection: inspection),
           ],
@@ -256,7 +288,7 @@ class _TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final code = (task.code ?? '').trim();
     final result = (task.result ?? '—').trim();
-    final isComplete = result.isNotEmpty && result != '—';
+    final isComplete = task.completed || (result.isNotEmpty && result != '—');
 
     return Card(
       child: ListTile(

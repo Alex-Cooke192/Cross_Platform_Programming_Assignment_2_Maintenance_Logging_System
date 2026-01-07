@@ -17,7 +17,7 @@ class OutstandingTaskDetailsScreen extends StatelessWidget {
     final taskRepo = context.read<TaskRepository>();
 
     return StreamBuilder<TaskUi?>(
-      stream: taskRepo.watchById(taskId),
+      stream: taskRepo.watchTask(taskId),
       builder: (context, snapshot) {
         final task = snapshot.data;
 

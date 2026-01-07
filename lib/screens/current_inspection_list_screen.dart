@@ -1,114 +1,123 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../data/repositories/inspection_repository.dart';
 import '../models/ui_models.dart';
 import 'current_inspection_details_screen.dart';
 
 const int kMaxInProgressInspections = 3;
 
 class CurrentInspectionListScreen extends StatelessWidget {
-  final List<InspectionUi> inProgressInspections;
-
-  /// Return the tasks for a given inspection (so the list screen can open details with tasks).
-  final List<TaskUi> Function(InspectionUi inspection) tasksForInspection;
-
-  const CurrentInspectionListScreen({
-    super.key,
-    required this.inProgressInspections,
-    required this.tasksForInspection,
-  });
+  const CurrentInspectionListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final count = inProgressInspections.length;
-    final canStart = count < kMaxInProgressInspections;
-    final remaining = (kMaxInProgressInspections - count).clamp(0, kMaxInProgressInspections);
+    final inspectionRepo = context.read<InspectionRepository>();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Current Inspections'),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: canStart
-            ? () => _startNewInspection(context)
-            : () => _showLimitDialog(context, count),
-        icon: const Icon(Icons.add),
-        label: const Text('Start inspection'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _StatusHeader(
-              count: count,
-              remaining: remaining,
-              canStart: canStart,
+    return StreamBuilder<List<InspectionUi>>(
+      stream: inspectionRepo.watchInProgressInspections(),
+      initialData: const [],
+      builder: (context, snap) {
+        final inProgressInspections = snap.data ?? const [];
+        final count = inProgressInspections.length;
+        final canStart = count < kMaxInProgressInspections;
+        final remaining =
+            (kMaxInProgressInspections - count).clamp(0, kMaxInProgressInspections);
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Current Inspections'),
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: canStart
+                ? () => _startNewInspection(context)
+                : () => _showLimitDialog(context, count),
+            icon: const Icon(Icons.add),
+            label: const Text('Start inspection'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _StatusHeader(
+                  count: count,
+                  remaining: remaining,
+                  canStart: canStart,
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: count == 0
+                      ? const _EmptyState()
+                      : ListView.separated(
+                          itemCount: count,
+                          separatorBuilder: (_, __) => const SizedBox(height: 10),
+                          itemBuilder: (context, index) {
+                            final inspection = inProgressInspections[index];
+                            return _InspectionCard(
+                              inspection: inspection,
+                              onTap: () => _openInspection(context, inspection),
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: count == 0
-                  ? const _EmptyState()
-                  : ListView.separated(
-                      itemCount: count,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
-                      itemBuilder: (context, index) {
-                        final inspection = inProgressInspections[index];
-                        return _InspectionCard(
-                          inspection: inspection,
-                          onTap: () => _openInspection(context, inspection),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   void _openInspection(BuildContext context, InspectionUi inspection) {
-    final tasks = tasksForInspection(inspection);
+    final inspectionRepo = context.read<InspectionRepository>();
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => CurrentInspectionDetailsScreen(
-          inspection: inspection,
-          tasks: tasks,
+        builder: (_) => StreamBuilder<List<TaskUi>>(
+          stream: inspectionRepo.watchTasksForInspection(inspection.id),
+          initialData: const [],
+          builder: (context, tasksSnap) {
+            final tasks = tasksSnap.data ?? const [];
 
-          // These are now handled inside this screen (not passed from HomeScreen).
-          onMarkComplete: () => _markInspectionComplete(context, inspection),
-          onPauseInspection: () => _pauseInspection(context, inspection),
+            return CurrentInspectionDetailsScreen(
+              inspectionId: inspection.id,
+            );
+          },
         ),
       ),
     );
   }
 
   void _startNewInspection(BuildContext context) {
-    // Later: this should open an "Outstanding list" or create a new in-progress record in SQLite.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Start inspection (TODO: hook up local persistence)'),
-      ),
-    );
+    // Typically you'd navigate to outstanding list so user selects one to start.
+    Navigator.of(context).pushNamed('/outstanding'); // adjust to your routes
   }
 
-  void _markInspectionComplete(BuildContext context, InspectionUi inspection) {
-    // Later: update in SQLite -> status=Completed, completedAt=now, then refresh state.
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Marked ${inspection.id} complete (TODO: persist)')),
+  Future<void> _markInspectionComplete(BuildContext context, InspectionUi inspection) async {
+    final inspectionRepo = context.read<InspectionRepository>();
+
+    // TODO: replace with your real logged-in technician uid
+    const technicianUid = 'TECHNICIAN_UID_TODO';
+
+    await inspectionRepo.completeInspection(
+      inspectionId: inspection.id,
+      technicianUid: technicianUid,
     );
 
     // Optional: pop back to the list after marking complete
-    Navigator.of(context).pop();
+    if (context.mounted) Navigator.of(context).pop();
   }
 
-  void _pauseInspection(BuildContext context, InspectionUi inspection) {
-    // Later: update in SQLite -> status=Outstanding/Paused, etc., then refresh state.
+  Future<void> _pauseInspection(BuildContext context, InspectionUi inspection) async {
+    // If you implement pauseInspection in the repo, call it here.
+    // For now we keep your existing behavior.
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Paused ${inspection.id} (TODO: persist)')),
+      SnackBar(content: Text('Pause ${inspection.id} (TODO: implement pauseInspection)')),
     );
 
     // Optional: pop back to the list after pausing
-    Navigator.of(context).pop();
+    if (context.mounted) Navigator.of(context).pop();
   }
 
   void _showLimitDialog(BuildContext context, int count) {
@@ -194,7 +203,8 @@ class _InspectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final started = inspection.openedAt == null ? '—' : _formatDateTime(inspection.openedAt!);
+    final started =
+        inspection.openedAt == null ? '—' : _formatDateTime(inspection.openedAt!);
 
     return Card(
       child: ListTile(
