@@ -14,6 +14,7 @@ class TaskRepository {
     return _taskDao.watchForInspection(inspectionId);
   }
 
+  // Reads task by id
   Stream<Task?> watchById(String taskId) {
     return _taskDao.watchById(taskId);
   }
