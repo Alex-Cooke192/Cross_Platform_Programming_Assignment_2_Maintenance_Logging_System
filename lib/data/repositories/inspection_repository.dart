@@ -52,6 +52,22 @@ class InspectionRepository {
         .map((rows) => rows.map<InspectionUi>(_mapInspectionRowToUi).toList());
   }
 
+
+ // Counters for each inspection status
+  Stream<int> watchReadyToBeginCount() {
+  // "Ready to begin" corresponds to "outstanding"
+  return _inspectionDao.watchReadyToBeginCount();
+  }
+
+  Stream<int> watchInProgressCount() {
+    return _inspectionDao.watchInProgressCount();
+  }
+
+  Stream<int> watchAwaitingSyncCount() {
+    // "Awaiting sync" corresponds to "completedAwaitingSync"
+    return _inspectionDao.watchAwaitingSyncCount();
+  }
+
   // -----------------------------
   // Details
   // -----------------------------
@@ -67,6 +83,8 @@ class InspectionRepository {
         .watchForInspection(inspectionId)
         .map((rows) => rows.map<TaskUi>(_mapTaskRowToUi).toList());
   }
+
+  
 
   // -----------------------------
   // Business actions
