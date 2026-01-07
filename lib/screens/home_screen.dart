@@ -17,7 +17,6 @@ class HomeScreen extends StatelessWidget {
     final inspectionRepo = context.read<InspectionRepository>();
     final taskRepo = context.read<TaskRepository>(); // keep if needed later
 
-    // ✅ Replace these with your real repo methods.
     final readyToBeginCount$ = inspectionRepo.watchReadyToBeginCount();
     final inProgressCount$ = inspectionRepo.watchInProgressCount();
     final awaitingSyncCount$ = inspectionRepo.watchAwaitingSyncCount();
